@@ -13,7 +13,13 @@ import { RFValue } from "react-native-responsive-fontsize";
 
 const { height } = Dimensions.get("window");
 
-const AddOptionModal = ({ visible, onClose, onTakePhoto, onManualEntry }) => {
+const AddOptionModal = ({
+  visible,
+  onClose,
+  onScanBarcode,
+  onTakePhoto,
+  onManualEntry,
+}) => {
   return (
     <Modal transparent={true} visible={visible} animationType="fade">
       <View style={styles.overlay}>
@@ -31,7 +37,7 @@ const AddOptionModal = ({ visible, onClose, onTakePhoto, onManualEntry }) => {
                 source={require("../../assets/icons/camera_icon.png")}
                 style={styles.icon}
               />
-              <Text style={styles.buttonText}>Scan Barcode</Text>
+              <Text style={styles.buttonText}>Take Photo</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={onManualEntry}>
@@ -40,6 +46,14 @@ const AddOptionModal = ({ visible, onClose, onTakePhoto, onManualEntry }) => {
                 style={styles.icon}
               ></Image>
               <Text style={styles.buttonText}>Enter Manually</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={onScanBarcode}>
+              <Image
+                source={require("../../assets/icons/barcode.png")}
+                style={styles.icon}
+              ></Image>
+              <Text style={styles.buttonText}>Scan Barcode</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -78,6 +92,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     display: "flex",
+    flexWrap: "wrap",
     width: "100%",
     flexDirection: "row",
     marginTop: 20,

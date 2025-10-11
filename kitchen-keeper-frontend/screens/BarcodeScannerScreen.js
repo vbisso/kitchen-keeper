@@ -73,7 +73,6 @@ export default function BarcodeScannerScreen({ navigation }) {
         setTimeout(() => {
           scanLock.current = false;
           setScanned(false);
-          lastUPC = null;
         }, 4500);
       }
     })();

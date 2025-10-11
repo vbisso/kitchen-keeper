@@ -1,107 +1,123 @@
 import React, { useState } from "react";
 import {
   View,
-  Text,
   Button,
-  FlatList,
-  TouchableOpacity,
+  Image,
   StyleSheet,
+  ActivityIndicator,
   Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import categoriesJSON from "../assets/data/categories.json";
 import FoodModal from "../components/modals/FoodModal";
 import useFoodHandlers from "../hooks/useFoodHandlers";
 import { recognizeImage } from "../services/recognizeImageService";
 
 export default function ImageRecognizeScreen() {
-  const [items, setItems] = useState([]);
-  const [selectedFood, setSelectedFood] = useState(null);
+  const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const { handleSaveFood } = useFoodHandlers();
+  const [selectedFood, setSelectedFood] = useState(null);
+  const [remainingItems, setRemainingItems] = useState([]);
+  const { handleSaveFood, handleDeleteFood } = useFoodHandlers();
 
+  const requestPermissions = async () => {
+    const cameraPerm = await ImagePicker.requestCameraPermissionsAsync();
+    const mediaPerm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (cameraPerm.status !== "granted" || mediaPerm.status !== "granted") {
+      Alert.alert(
+        "Permissions required",
+        "Camera and gallery permissions are needed."
+      );
+      return false;
+    }
+    return true;
+  };
+
+  //take photo
   const takePhoto = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permission needed", "Camera permission is required.");
-      return;
-    }
+    const hasPerm = await requestPermissions();
+    if (!hasPerm) return;
+
     const result = await ImagePicker.launchCameraAsync({
-      quality: 0.6,
-      base64: false,
-      exif: false,
+      quality: 0.7,
     });
     if (!result.canceled) {
-      await sendToBackend(result.assets[0].uri);
+      setImage(result.assets[0].uri);
+      await handleRecognize(result.assets[0]);
     }
   };
 
-  const pickFromGallery = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permission needed", "Gallery permission is required.");
-      return;
-    }
+  // picks from library
+  const pickImage = async () => {
+    const hasPerm = await requestPermissions();
+    if (!hasPerm) return;
+
     const result = await ImagePicker.launchImageLibraryAsync({
-      quality: 0.6,
-      base64: false,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.7,
     });
     if (!result.canceled) {
-      await sendToBackend(result.assets[0].uri);
+      setImage(result.assets[0].uri);
+      await handleRecognize(result.assets[0]);
     }
   };
 
-  const sendToBackend = async (uri) => {
+  const handleRecognize = async (asset) => {
     try {
-      const recognized = await recognizeImage(uri);
-      setItems(recognized);
-    } catch (e) {
-      console.warn("Image recognition failed:", e.message);
-      Alert.alert("Recognition failed", e.message);
+      setLoading(true);
+      const data = await recognizeImage(asset);
+      console.log("Recognized items:", data);
+
+      if (!data.items || data.items.length === 0) {
+        Alert.alert("No items found", "Try a clearer image.");
+        return;
+      }
+
+      const [firstItem, ...rest] = data.items.map((it) => ({
+        ...it,
+        expDate: it.expDate ? new Date(it.expDate) : new Date(),
+        view: "",
+      }));
+
+      setSelectedFood(firstItem);
+      setRemainingItems(rest);
+      setModalVisible(true);
+    } catch (err) {
+      console.error("Error recognizing image:", err);
+      Alert.alert("Error", "Image recognition failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const openItem = (item) => {
-    const expDate = item.expDate ? new Date(item.expDate) : new Date();
-    setSelectedFood({
-      name: capitalize(item.name || "Unknown item"),
-      category: item.category || "Other",
-      quantity: item.quantity || 1,
-      unit: item.unit || "",
-      expDate,
-      view: "",
-    });
-    setModalVisible(true);
+  // Save and move to next item
+  const handleSaveAndNext = (food) => {
+    handleSaveFood(food);
+    if (remainingItems.length > 0) {
+      const [next, ...rest] = remainingItems;
+      setSelectedFood(next);
+      setRemainingItems(rest);
+    } else {
+      setModalVisible(false);
+      setSelectedFood(null);
+    }
   };
-
-  const capitalize = (s) =>
-    typeof s === "string" ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 
   return (
     <View style={styles.container}>
-      <View style={styles.row}>
-        <Button title="Take Photo" onPress={takePhoto} />
-        <View style={{ width: 12 }} />
-        <Button title="Pick From Gallery" onPress={pickFromGallery} />
-      </View>
+      <Button title="📸 Take Photo" onPress={takePhoto} />
+      <View style={{ height: 10 }} />
+      <Button title="🖼 Choose from Library" onPress={pickImage} />
 
-      <FlatList
-        data={items}
-        keyExtractor={(_, i) => String(i)}
-        ListEmptyComponent={
-          <Text style={styles.empty}>No items recognized yet.</Text>
-        }
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card} onPress={() => openItem(item)}>
-            <Text style={styles.title}>{capitalize(item.name)}</Text>
-            <Text>
-              {item.quantity} {item.unit}
-            </Text>
-            <Text>Category: {item.category}</Text>
-            <Text>Exp: {item.expDate || "n/a"}</Text>
-          </TouchableOpacity>
-        )}
-      />
+      {loading && <ActivityIndicator size="large" style={{ marginTop: 20 }} />}
+      {image && (
+        <Image
+          source={{ uri: image }}
+          style={{ width: "100%", height: 300, marginTop: 20 }}
+          resizeMode="contain"
+        />
+      )}
 
       <FoodModal
         visible={modalVisible}
@@ -109,26 +125,23 @@ export default function ImageRecognizeScreen() {
         onClose={() => {
           setModalVisible(false);
           setSelectedFood(null);
+          setRemainingItems([]);
         }}
-        onSave={(food) => {
-          handleSaveFood(food);
+        onSave={handleSaveAndNext}
+        onDelete={(id) => {
+          handleDeleteFood(id);
           setModalVisible(false);
         }}
-        onDelete={() => setModalVisible(false)}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 12 },
-  row: { flexDirection: "row", justifyContent: "center", marginBottom: 12 },
-  empty: { textAlign: "center", marginTop: 16, opacity: 0.6 },
-  card: {
-    padding: 12,
-    marginBottom: 8,
-    borderRadius: 10,
-    backgroundColor: "#1f2937",
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
-  title: { fontWeight: "600", marginBottom: 6, fontSize: 16 },
 });

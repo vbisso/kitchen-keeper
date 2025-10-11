@@ -28,10 +28,7 @@ function AppNavigator() {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Scan" component={BarcodeScannerScreen} />
-          <Stack.Screen
-            name="ImageRecognize"
-            component={ImageRecognizeScreen}
-          />
+          <Stack.Screen name="Take Photo" component={ImageRecognizeScreen} />
           <Stack.Screen name="Fridge" component={Fridge} />
           <Stack.Screen name="Pantry" component={Pantry} />
         </>

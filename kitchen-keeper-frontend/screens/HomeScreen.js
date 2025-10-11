@@ -257,11 +257,14 @@ const HomeScreen = ({ navigation }) => {
         visible={optionModalVisible}
         onClose={() => setOptionModalVisible(false)}
         onTakePhoto={() => {
-          navigation.navigate("ImageRecognize"), setOptionModalVisible(false);
+          navigation.navigate("Take Photo"), setOptionModalVisible(false);
         }}
         onManualEntry={() => {
           setModalVisible(true);
           setOptionModalVisible(false);
+        }}
+        onScanBarcode={() => {
+          navigation.navigate("Scan"), setOptionModalVisible(false);
         }}
       ></AddOptionModal>
       <FoodModal
