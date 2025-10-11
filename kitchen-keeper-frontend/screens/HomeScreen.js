@@ -257,7 +257,7 @@ const HomeScreen = ({ navigation }) => {
         visible={optionModalVisible}
         onClose={() => setOptionModalVisible(false)}
         onTakePhoto={() => {
-          navigation.navigate("Scan"), setOptionModalVisible(false);
+          navigation.navigate("ImageRecognize"), setOptionModalVisible(false);
         }}
         onManualEntry={() => {
           setModalVisible(true);

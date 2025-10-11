@@ -9,6 +9,7 @@ import { extractFoodData } from "../utils/extractFoodData";
 import { processUPCResponse } from "../services/processUPCData";
 import categoriesJSON from "../assets/data/categories.json";
 import { Vibration } from "react-native";
+import { lastUPC } from "../services/processUPCData";
 
 export default function BarcodeScannerScreen({ navigation }) {
   const [permission, requestPermission] = useCameraPermissions();
@@ -24,67 +25,60 @@ export default function BarcodeScannerScreen({ navigation }) {
       requestPermission();
     }
   }, []);
+
+  const scanLock = useRef(false);
   const scannedUPCs = useRef(new Set());
 
-  let scanLock = false;
+  const handleBarCodeScanned = ({ type, data }) => {
+    if (scanLock.current || scannedUPCs.current.has(data) || scanned) return;
 
-  const handleBarCodeScanned = async ({ type, data }) => {
-    if (scanLock || scannedUPCs.current.has(data)) {
-      return;
-    }
-
-    scanLock = true; // block all new scans instantly
-
+    scanLock.current = true;
     scannedUPCs.current.add(data);
-    setScanned(true); // this is for UI
+    setScanned(true);
     Vibration.vibrate();
 
-    // if (scannedUPCs.current.has(data)) {
-    //   console.log("Duplicate scan skipped:", data);
-    //   // Still reset scanned flag after short delay
-    //   setTimeout(() => setScanned(false), 1500);
-    //   return;
-    // }
+    (async () => {
+      try {
+        const upcData = await lookupProductByBarcode(data);
+        if (!upcData) return;
 
-    // scannedUPCs.current.add(data);
+        console.log("UPC response:", upcData);
 
-    try {
-      const upcData = await lookupProductByBarcode(data);
-      if (!upcData) return;
+        const processed = await processUPCResponse(
+          upcData,
+          Object.keys(categoriesJSON)
+        );
+        if (!processed) return;
 
-      console.log("UPC response:", upcData);
+        console.log("Processed by AI:", processed);
 
-      // Asks ChatGPT to clean and enrich data
-      const processed = await processUPCResponse(
-        upcData,
-        Object.keys(categoriesJSON)
-      );
-      console.log("Processed by AI:", processed);
-      //converts string to date
-      const expDate = processed?.expDate
-        ? new Date(processed.expDate)
-        : new Date();
+        const expDate = processed?.expDate
+          ? new Date(processed.expDate)
+          : new Date();
 
-      const newFood = {
-        name: processed?.name || upcData.title || "Unknown item",
-        category: processed?.category,
-        quantity: processed?.quantity || 1,
-        unit: processed?.unit || "",
-        expDate,
-        view: "",
-      };
+        const newFood = {
+          name: processed?.name || upcData.title || "Unknown item",
+          category: processed?.category,
+          quantity: processed?.quantity || 1,
+          unit: processed?.unit || "",
+          expDate,
+          view: "",
+        };
 
-      setSelectedFood(newFood);
-      setModalVisible(true);
-    } catch (error) {
-      console.error("Error scanning barcode:", error);
-    } finally {
-      // Allow scanning again after delay
-      setTimeout(() => {
-        setScanned(false);
-      }, 5000);
-    }
+        setSelectedFood(newFood);
+        setModalVisible(true);
+      } catch (error) {
+        console.error("Error scanning barcode:", error);
+      } finally {
+        setTimeout(() => {
+          scanLock.current = false;
+          setScanned(false);
+          lastUPC = null;
+        }, 4500);
+      }
+    })();
   };
+
   if (!permission || !permission.granted) {
     return (
       <View style={styles.centered}>
@@ -96,14 +90,6 @@ export default function BarcodeScannerScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* <CameraView
-        ref={cameraRef}
-        onBarcodeScanned={handleBarCodeScanned}
-        barcodeScannerSettings={{
-          barcodeTypes: ["qr", "ean13", "upc_a"],
-        }}
-        style={StyleSheet.absoluteFillObject}
-      /> */}
       {!scanned && (
         <CameraView
           ref={cameraRef}
@@ -120,6 +106,7 @@ export default function BarcodeScannerScreen({ navigation }) {
         onClose={() => {
           setModalVisible(false);
           setScanned(false);
+          scanLock.current = false;
           scannedUPCs.current.clear(); // allow rescanning
         }}
         onSave={(food) => {

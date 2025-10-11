@@ -2,6 +2,8 @@ import { extractFoodData } from "../utils/extractFoodData";
 import axios from "axios";
 import Constants from "expo-constants";
 
+let lastUPC = null;
+
 const apiKey =
   process.env.OPENAI_API_KEY ||
   (typeof Constants !== "undefined"
@@ -10,6 +12,12 @@ const apiKey =
 
 export const processUPCResponse = async (upcData, categories) => {
   try {
+    if (lastUPC === upcData.upc) {
+      return;
+    }
+
+    lastUPC = upcData.upc;
+
     const prompt = `Clean this UPC data and extract:
 - name (include what the item is e.g. Milk, Chicken, Apples)
 - matching category from [${categories.join(", ")}]
@@ -44,4 +52,7 @@ ${JSON.stringify(upcData)}`;
     );
     return extractFoodData(upcData); // fallback
   }
+};
+export const resetLastUPC = () => {
+  lastUPC = null;
 };

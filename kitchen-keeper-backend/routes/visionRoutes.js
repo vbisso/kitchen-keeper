@@ -1,0 +1,98 @@
+const express = require("express");
+const multer = require("multer");
+const OpenAI = require("openai");
+
+const router = express.Router();
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 6 * 1024 * 1024 }, // 6MB max
+});
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+router.post("/recognize-image", upload.single("photo"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No image file uploaded." });
+    }
+
+    let categories = [];
+    if (req.body?.categories) {
+      try {
+        categories = JSON.parse(req.body.categories);
+      } catch (e) {
+        console.warn("Invalid categories JSON:", e.message);
+      }
+    }
+
+    const dataUrl = `data:${
+      req.file.mimetype
+    };base64,${req.file.buffer.toString("base64")}`;
+
+    const guidance = `
+Identify each distinct grocery/food item in this photo and return ONLY valid JSON (no code fences).
+For each item include:
+- name: singular common name (e.g., "banana", "milk", "apple")
+- quantity: numeric value (how many items or packages)
+- unit: unit of measure (e.g., g, kg, oz, lb, ml, L, unit, slice, piece)
+- category: ${
+      categories?.length
+        ? `pick EXACTLY one from this list: [${categories.join(", ")}]`
+        : "food category (short, e.g., Dairy, Produce, Meat, Bakery, Pantry, Frozen, Beverages, Other)"
+    }
+- expDate: YYYY-MM-DD estimated shelf-life for typical storage (assume fridge if ambiguous). Be conservative.
+
+Example JSON:
+[
+  {"name": "banana", "quantity": 3, "unit": "unit", "category": "Produce", "expDate": "2025-10-15"},
+  {"name": "milk", "quantity": 1, "unit": "L", "category": "Dairy", "expDate": "2025-10-20"}
+]`;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      temperature: 0.2,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You extract grocery items from photos and return strict JSON.",
+        },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: guidance },
+            { type: "image_url", image_url: dataUrl },
+          ],
+        },
+      ],
+    });
+
+    let text = completion.choices?.[0]?.message?.content?.trim() || "[]";
+
+    // Extract JSON
+    let items;
+    try {
+      items = JSON.parse(text);
+    } catch {
+      const match = text.match(/\[[\s\S]*\]/);
+      if (!match) throw new Error("Model did not return valid JSON.");
+      items = JSON.parse(match[0]);
+    }
+
+    // Normalize data
+    const normalized = (Array.isArray(items) ? items : []).map((it) => ({
+      name: it.name?.toString()?.trim() || "Unknown item",
+      quantity: Number(it.quantity) || 1,
+      unit: it.unit?.toString()?.trim() || "unit",
+      category: it.category?.toString()?.trim() || "Other",
+      expDate: it.expDate?.toString()?.slice(0, 10) || null,
+    }));
+
+    res.json({ items: normalized });
+  } catch (err) {
+    console.error("recognize-image error:", err);
+    res.status(500).json({ error: err.message || "Image recognition failed." });
+  }
+});
+
+module.exports = router;
