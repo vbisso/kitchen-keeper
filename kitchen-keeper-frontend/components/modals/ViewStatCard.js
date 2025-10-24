@@ -58,11 +58,12 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: RFValue(14),
-    fontWeight: "bold",
+    fontFamily: "Lexend-SemiBold",
   },
   statNumber: {
     color: "#848484",
     fontSize: RFValue(14),
+    fontFamily: "Lexend-Regular",
   },
 });
 

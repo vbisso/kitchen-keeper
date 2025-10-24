@@ -95,11 +95,12 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: RFValue(20),
-    fontWeight: "bold",
+    fontFamily: "Lexend-SemiBold",
   },
   date: {
     color: "#838A8F",
     fontSize: RFValue(12),
+    fontFamily: "Lexend-Regular",
   },
 
   container: {
@@ -107,11 +108,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f5f5f5",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 24,
-  },
+
   statsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",

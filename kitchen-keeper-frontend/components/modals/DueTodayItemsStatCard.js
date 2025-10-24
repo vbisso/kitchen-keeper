@@ -47,15 +47,15 @@ const styles = StyleSheet.create({
 
   statNumber: {
     fontSize: 36,
-    fontWeight: "bold",
     marginBottom: 8,
     color: "#FFFFFF",
+    fontFamily: "Lexend-SemiBold",
   },
   statLabel: {
     fontSize: 16,
-    fontWeight: "bold",
     color: "#FFFFFF",
     paddingLeft: 5,
+    fontFamily: "Lexend-SemiBold",
   },
 });
 
