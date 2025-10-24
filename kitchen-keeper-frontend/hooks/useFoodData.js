@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../utils/config";
@@ -98,69 +98,6 @@ export default function useFoodData(sortBy) {
     }
   };
 
-  // const loadFoods = async () => {
-  //   try {
-  //     // Fetch foods from API
-  //     const storedFoods = await AsyncStorage.getItem("foods");
-  //     if (storedFoods) {
-  //       const foodsWithDates = JSON.parse(storedFoods).map((food) => ({
-  //         ...food,
-  //         expDate: new Date(food.expDate),
-  //       }));
-  //       setFoods(sortFoods(foodsWithDates, sortBy));
-  //     }
-  //   } catch (error) {
-  //     console.error("Error loading foods:", error);
-  //   }
-  // };
-
-  // const saveFoods = async (newFood) => {
-  //   try {
-  //     let updatedFoods;
-
-  //     if (newFood.id) {
-  //       // Edit existing item
-  //       updatedFoods = foods.map((food) =>
-  //         food.id === newFood.id
-  //           ? { ...newFood, expDate: new Date(newFood.expDate) }
-  //           : food
-  //       );
-  //     } else {
-  //       // Add new item
-  //       newFood.id = uuidv4();
-  //       updatedFoods = [
-  //         ...foods,
-  //         { ...newFood, expDate: new Date(newFood.expDate) },
-  //       ];
-  //     }
-
-  //     const sortedFoods = sortFoods(updatedFoods, sortBy);
-  //     setFoods(sortedFoods);
-
-  //     // Convert date to string before saving to storage
-  //     const foodsForStorage = sortedFoods.map((item) => ({
-  //       ...item,
-  //       expDate: item.expDate.toISOString(),
-  //     }));
-
-  //     await AsyncStorage.setItem("foods", JSON.stringify(foodsForStorage));
-  //     console.log("Foods saved to storage:", foodsForStorage);
-  //   } catch (error) {
-  //     console.error("Error saving food:", error);
-  //   }
-  // };
-
-  // const deleteFood = async (id) => {
-  //   try {
-  //     console.log("Deleting food with id:", id);
-  //     const newFoods = foods.filter((food) => food.id !== id);
-  //     setFoods(newFoods);
-  //     await AsyncStorage.setItem("foods", JSON.stringify(newFoods));
-  //   } catch (error) {
-  //     console.error("Error deleting food:", error);
-  //   }
-  // };
-
   const sortFoods = (foods, criterion) => {
     return foods.sort((a, b) => {
       if (criterion === "expDate") {
@@ -177,6 +114,80 @@ export default function useFoodData(sortBy) {
     return foodItem;
   };
 
+  // Helper function to check if date is today
+  const isToday = (date) => {
+    const today = new Date();
+    const checkDate = new Date(date);
+    return (
+      checkDate.getDate() === today.getDate() &&
+      checkDate.getMonth() === today.getMonth() &&
+      checkDate.getFullYear() === today.getFullYear()
+    );
+  };
+
+  // Helper function to check if date is within the next 7 days (not including today)
+  const isUpcomingSoon = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const sevenDaysFromNow = new Date(today);
+    sevenDaysFromNow.setDate(today.getDate() + 7);
+
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+
+    return checkDate > today && checkDate <= sevenDaysFromNow;
+  };
+
+  // Helper function to check if date is expired
+  const isExpired = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+    return checkDate < today;
+  };
+
+  const isFridge = (view) => {
+    return view === "Fridge";
+  };
+  const isPantry = (view) => {
+    return view === "Pantry";
+  };
+  const isFreezer = (view) => {
+    return view === "Freezer";
+  };
+
+  // Calculate counts of food items
+  const counts = useMemo(() => {
+    const allItems = foods.length;
+    const dueToday = foods.filter(
+      (food) => food.expDate && isToday(food.expDate)
+    ).length;
+    const upcoming = foods.filter(
+      (food) => food.expDate && isUpcomingSoon(food.expDate)
+    ).length;
+    const expired = foods.filter(
+      (food) => food.expDate && isExpired(food.expDate)
+    ).length;
+
+    const fridgeCount = foods.filter((food) => isFridge(food.view)).length;
+    const pantryCount = foods.filter((food) => isPantry(food.view)).length;
+    const freezerCount = foods.filter((food) => isFreezer(food.view)).length;
+
+    return {
+      allItems,
+      dueToday,
+      upcoming,
+      expired,
+      fridgeCount,
+      pantryCount,
+      freezerCount,
+    };
+  }, [foods]);
+
+  //calculate items in fridge, pantry or freezer
+
   return {
     foods,
     saveFoods,
@@ -184,5 +195,6 @@ export default function useFoodData(sortBy) {
     deleteFood,
     sortFoods,
     handleEdit,
+    counts,
   };
 }

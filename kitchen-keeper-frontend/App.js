@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import "react-native-get-random-values";
+import { registerForNotifications } from "./services/notificationService";
 
 import WelcomeScreen from "./screens/WelcomeScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import HomeScreen from "./screens/HomeScreen";
+import HomeScreen2 from "./screens/HomeScreen2";
+
 import Fridge from "./screens/Fridge";
 import Pantry from "./screens/Pantry";
 import BarcodeScannerScreen from "./screens/BarcodeScannerScreen";
@@ -25,7 +28,9 @@ function AppNavigator() {
     <Stack.Navigator>
       {token ? (
         <>
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Home" component={HomeScreen2} />
+          <Stack.Screen name="AllItems" component={HomeScreen} />
+
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Scan" component={BarcodeScannerScreen} />
           <Stack.Screen name="Take Photo" component={ImageRecognizeScreen} />
@@ -44,6 +49,9 @@ function AppNavigator() {
 }
 
 export default function App() {
+  useEffect(() => {
+    registerForNotifications();
+  }, []);
   return (
     <AuthProvider>
       <FoodProvider>

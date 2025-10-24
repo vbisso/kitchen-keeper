@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useFoodContext } from "../context/FoodContext";
+import { scheduleExpirationNotification } from "../services/notificationService";
 
 export default function useFoodHandlers(sortBy = "expDate") {
   const [selectedFood, setSelectedFood] = useState(null);
@@ -22,6 +23,7 @@ export default function useFoodHandlers(sortBy = "expDate") {
   const handleSaveFood = async (foodData) => {
     try {
       await saveFoods(foodData);
+      await scheduleExpirationNotification(foodData, foodData.expDate);
       setSelectedFood(null);
       setModalVisible(false);
     } catch (error) {

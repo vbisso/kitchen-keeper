@@ -8,7 +8,6 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 
 import FoodList from "../components/food/FoodList";
 import FoodModal from "../components/modals/FoodModal";
@@ -63,7 +62,7 @@ const HomeScreen = ({ navigation }) => {
   } = useFoodHandlers();
 
   return (
-    <LinearGradient colors={["#e8eeff", "#FEFEFF"]} style={style.container}>
+    <View style={style.container}>
       {/* Solter, Filer and Profile Container */}
       <View
         style={{
@@ -274,11 +273,17 @@ const HomeScreen = ({ navigation }) => {
         onDelete={handleDeleteFood}
         selectedFood={selectedFood}
       />
-    </LinearGradient>
+    </View>
   );
 };
 
 const style = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    flex: 1,
+    backgroundColor: "F9F9F9",
+  },
   profileButtonContainer: {
     display: "flex",
     flexDirection: "row",
@@ -294,11 +299,7 @@ const style = StyleSheet.create({
     width: RFValue(22),
     height: RFValue(22),
   },
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
-  },
+
   foodList: {
     marginTop: 5,
     marginBottom: 150,
