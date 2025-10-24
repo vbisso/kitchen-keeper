@@ -34,10 +34,16 @@ export async function registerForNotifications() {
  * @param {string | Date} expirationDate - Date of expiration in stirng format or Date object
  */
 
-export async function scheduleExpirationNotification(foodName, expirationDate) {
+export async function scheduleExpirationNotification(foodData, expirationDate) {
   const expDate = new Date(expirationDate);
   const triggerDate = new Date(expDate);
   triggerDate.setDate(triggerDate.getDate() - 1); //set to 1 day before expiration
+  const foodName = foodData.name;
+  const formattedDate = expirationDate.toLocaleDateString("en-US", {
+    weekday: "long",
+    day: "2-digit",
+    month: "short",
+  });
 
   if (triggerDate < new Date()) {
     console.log(
@@ -49,7 +55,7 @@ export async function scheduleExpirationNotification(foodName, expirationDate) {
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "Food expiring soon!",
-      body: `${foodName} is about to expire on ${expirationDate}`,
+      body: `${foodName} is about to expire on ${formattedDate}`,
       sound: true,
     },
     // trigger: triggerDate,

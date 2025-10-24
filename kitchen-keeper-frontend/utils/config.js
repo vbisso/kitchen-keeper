@@ -1,8 +1,8 @@
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 
-const LAN_IP = "192.168.0.16";
-// const LAN_IP = "10.244.190.231"; //BYUI WIFI
+// const LAN_IP = "192.168.0.16";
+const LAN_IP = "10.244.190.231"; //BYUI WIFI
 
 const isDevice = Constants.appOwnership === "expo"; // true on Expo Go
 const isSimulator =
