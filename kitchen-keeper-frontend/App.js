@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
 import "react-native-get-random-values";
 import { registerForNotifications } from "./services/notificationService";
 import { useFonts } from "expo-font";
@@ -9,7 +11,8 @@ import * as SplashScreen from "expo-splash-screen";
 import WelcomeScreen from "./screens/WelcomeScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
-import HomeScreen from "./screens/HomeScreen";
+import ListViewScreen from "./screens/ListViewScreen";
+
 import HomeScreen2 from "./screens/HomeScreen2";
 
 import Fridge from "./screens/Fridge";
@@ -30,20 +33,60 @@ function AppNavigator() {
     <Stack.Navigator>
       {token ? (
         <>
-          <Stack.Screen name="Home" component={HomeScreen2} />
-          <Stack.Screen name="AllItems" component={HomeScreen} />
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen2}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ListView"
+            component={ListViewScreen}
+            options={{ headerShown: false }}
+          />
 
-          <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="Scan" component={BarcodeScannerScreen} />
-          <Stack.Screen name="Take Photo" component={ImageRecognizeScreen} />
-          <Stack.Screen name="Fridge" component={Fridge} />
-          <Stack.Screen name="Pantry" component={Pantry} />
+          <Stack.Screen
+            name="Profile"
+            component={ProfileScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Scan"
+            component={BarcodeScannerScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Take Photo"
+            component={ImageRecognizeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Fridge"
+            component={Fridge}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Pantry"
+            component={Pantry}
+            options={{ headerShown: false }}
+          />
         </>
       ) : (
         <>
-          <Stack.Screen name="Welcome" component={WelcomeScreen} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen
+            name="Welcome"
+            component={WelcomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{ headerShown: false }}
+          />
         </>
       )}
     </Stack.Navigator>
@@ -72,9 +115,11 @@ export default function App() {
   return (
     <AuthProvider>
       <FoodProvider>
-        <NavigationContainer>
-          <AppNavigator />
-        </NavigationContainer>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <AppNavigator />
+          </NavigationContainer>
+        </SafeAreaProvider>
       </FoodProvider>
     </AuthProvider>
   );

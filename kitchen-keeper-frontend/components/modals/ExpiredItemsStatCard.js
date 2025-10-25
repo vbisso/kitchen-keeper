@@ -6,7 +6,7 @@ const ExpiredItemsStatCard = ({ counts }) => {
   return (
     <TouchableOpacity
       style={styles.statCard}
-      onPress={() => navigation.navigate("AllItems")}
+      onPress={() => navigation.navigate("ListView", { filterType: "expired" })}
     >
       <View style={styles.statCardFlex}>
         <Image
@@ -16,7 +16,7 @@ const ExpiredItemsStatCard = ({ counts }) => {
             height: 45,
           }}
         ></Image>
-        <Text style={styles.statNumber}>{counts.dueToday}</Text>
+        <Text style={styles.statNumber}>{counts.expired}</Text>
       </View>
       <View style={styles.statCardFlex}>
         <Text style={styles.statLabel}>Expired</Text>

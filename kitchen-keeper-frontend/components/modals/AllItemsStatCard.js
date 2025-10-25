@@ -6,7 +6,7 @@ const AllItemsStatCard = ({ counts }) => {
   return (
     <TouchableOpacity
       style={styles.statCard}
-      onPress={() => navigation.navigate("AllItems")}
+      onPress={() => navigation.navigate("ListView", { filterType: "all" })}
     >
       <View style={styles.statCardFlex}>
         <Image

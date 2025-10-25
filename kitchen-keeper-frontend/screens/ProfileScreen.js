@@ -1,15 +1,11 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../context/AuthContext";
 import useUserData from "../hooks/useUserData";
 import { ActivityIndicator } from "react-native";
+import SafeContainer from "../components/SafeContainer";
+import Header from "../components/modals/Header";
 
 export default function ProfileScreen({ navigation }) {
   const { data: user, loading, error } = useUserData();
@@ -19,16 +15,9 @@ export default function ProfileScreen({ navigation }) {
 
   // console.log("User Data:", user);
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeContainer>
       {/* Header */}
-
-      {/* <Text style={styles.title}>Profile</Text> */}
-
-      {/* User Info */}
-      <View style={styles.userInfo}>
-        <Text style={styles.name}>Welcome, {user.firstName}</Text>
-        <Text style={styles.email}>{user.email}</Text>
-      </View>
+      <Header></Header>
 
       {/* My Profile Section */}
       <TouchableOpacity style={styles.section}>
@@ -53,7 +42,7 @@ export default function ProfileScreen({ navigation }) {
         <Icon name="log-out-outline" size={20} color="#fff" />
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </SafeContainer>
   );
 }
 

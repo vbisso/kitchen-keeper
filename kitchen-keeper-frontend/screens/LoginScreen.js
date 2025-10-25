@@ -12,6 +12,7 @@ import {
 import { RFValue } from "react-native-responsive-fontsize";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../utils/config";
+import SafeContainer from "../components/SafeContainer";
 
 const API = API_BASE_URL;
 export default function LoginScreen({ navigation }) {
@@ -41,7 +42,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeContainer>
       {/* <View style={styles.logoContainer}> */}
       <Image
         style={styles.logo}
@@ -79,7 +80,7 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.registerButton}>Register</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeContainer>
   );
 }
 const styles = StyleSheet.create({

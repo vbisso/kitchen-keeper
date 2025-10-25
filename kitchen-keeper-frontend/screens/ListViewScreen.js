@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -9,18 +9,23 @@ import {
   Pressable,
 } from "react-native";
 
+import SafeContainer from "../components/SafeContainer";
+
 import FoodList from "../components/food/FoodList";
 import FoodModal from "../components/modals/FoodModal";
 import AddOptionModal from "../components/modals/AddOptionModal";
 import SearchBar from "../components/UI/SearchBar";
 import { RFValue } from "react-native-responsive-fontsize";
 import useFoodHandlers from "../hooks/useFoodHandlers";
+import useFoodData from "../hooks/useFoodData";
 import { useAuth } from "../context/AuthContext";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
+import useUserData from "../hooks/useUserData";
+import Header from "../components/modals/Header";
+import Footer from "../components/modals/Footer";
 
-// import BarcodeScanner from "../components/modals/BarcodeScanner";
-
-const HomeScreen = ({ navigation }) => {
+const ListViewScreen = ({ navigation, route }) => {
   const [selectedIds, setSelectedIds] = useState([]);
   const isSelectionMode = selectedIds.length > 0;
 
@@ -60,51 +65,53 @@ const HomeScreen = ({ navigation }) => {
     optionModalVisible,
     setOptionModalVisible,
   } = useFoodHandlers();
+  const { filterFoodsByType } = useFoodData();
+
+  const { filterType } = route.params || { filterType: "all" };
+  const filteredFoods = useMemo(
+    () => filterFoodsByType(foods, filterType),
+    [foods, filterType]
+  );
+  const titles = {
+    all: "All Items",
+    dueToday: "Due Today",
+    upcoming: "Upcoming Items",
+    expired: "Expired Items",
+    fridge: "Fridge Items",
+    pantry: "Pantry Items",
+  };
 
   return (
-    <View style={style.container}>
-      {/* Solter, Filer and Profile Container */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingHorizontal: 15,
-          paddingVertical: 10,
-          marginTop: 10,
-          // backgroundColor: "red",
-        }}
-      >
+    <SafeContainer>
+      {/* Header Container */}
+      <Header></Header>
+      {/* Solter, Filer  Container */}
+      <View style={style.headlineRow}>
+        <Text style={style.title}>{titles[filterType] || "Items"}</Text>
+
         {/* sort and filter container */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "flex-end",
-            alignItems: "center",
-          }}
-        >
+        <View style={style.iconContainer}>
           {/* Sort icon */}
           <TouchableOpacity
             onPress={() => setShowSortOptions(!showSortOptions)}
             style={{ marginRight: 10 }}
           >
-            <Icon name="swap-vertical-outline" size={24} />
+            <Image
+              source={require("../assets/icons/Swap.png")}
+              style={{ width: 24, height: 24 }}
+            ></Image>
           </TouchableOpacity>
 
           {/* Filter icon */}
           <TouchableOpacity
             onPress={() => setShowFilterOptions(!showFilterOptions)}
           >
-            <Icon name="filter-outline" size={24} />
+            <Image
+              source={require("../assets/icons/Filter 4.png")}
+              style={{ width: 24, height: 24 }}
+            ></Image>
           </TouchableOpacity>
         </View>
-        {/* Profile Button */}
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Profile")}
-          // style={style.profileButtonContainer}
-        >
-          <Icon name="ellipsis-horizontal" size={24} />
-        </TouchableOpacity>
       </View>
 
       {showSortOptions && (
@@ -165,13 +172,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
       )}
 
-      <View style={style.searchBarContainer}>
-        <SearchBar
-          style={style.searchBar}
-          searchText={searchText}
-          onSearch={setSearchText}
-        ></SearchBar>
-      </View>
+      <SearchBar searchText={searchText} onSearch={setSearchText}></SearchBar>
 
       {isSelectionMode && (
         <TouchableOpacity
@@ -191,7 +192,7 @@ const HomeScreen = ({ navigation }) => {
 
       <ScrollView style={style.foodList}>
         <FoodList
-          foods={foods}
+          foods={filteredFoods}
           onDelete={(id) => handleDeleteFood(id)}
           onEdit={handleEditFood}
           searchText={searchText}
@@ -203,7 +204,7 @@ const HomeScreen = ({ navigation }) => {
           filterCategory={filterCategory}
         />
       </ScrollView>
-      <View style={style.footerContainer}>
+      {/* <View style={style.footerContainer}>
         {foods.length === 0 && (
           <View>
             <View style={style.arrowContainer}>
@@ -222,36 +223,15 @@ const HomeScreen = ({ navigation }) => {
         )}
 
         <View style={style.footer}>
-          <TouchableOpacity
-            style={style.ButtonContainer}
-            onPress={() => navigation.navigate("Fridge")}
-          >
-            <Image
-              style={style.fridgeViewButton}
-              source={require("../assets/icons/fridge view icon 2.png")}
-            />
-            <Text style={style.buttonText}>Fridge</Text>
-          </TouchableOpacity>
-
           <Pressable onPress={handleAddFood} style={style.addButton}>
             <Image
               style={style.addButtonImage}
               source={require("../assets/icons/nav_add icon.png")}
             />
           </Pressable>
-
-          <TouchableOpacity
-            style={style.ButtonContainer}
-            onPress={() => navigation.navigate("Pantry")}
-          >
-            <Image
-              style={style.pantryViewButton}
-              source={require("../assets/icons/pantry view icon 1.png")}
-            />
-            <Text style={style.buttonText}>Pantry</Text>
-          </TouchableOpacity>
         </View>
-      </View>
+      </View> */}
+      <Footer handleAddFood={handleAddFood}></Footer>
       <AddOptionModal
         visible={optionModalVisible}
         onClose={() => setOptionModalVisible(false)}
@@ -273,51 +253,36 @@ const HomeScreen = ({ navigation }) => {
         onDelete={handleDeleteFood}
         selectedFood={selectedFood}
       />
-    </View>
+    </SafeContainer>
   );
 };
 
 const style = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
-    backgroundColor: "F9F9F9",
+  title: {
+    fontSize: RFValue(16),
+    fontFamily: "Lexend-SemiBold",
+    textAlign: "center",
   },
-  profileButtonContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    // backgroundColor: "red",
-    marginTop: 12,
-    marginHorizontal: 5,
-    paddingHorizontal: 12,
-  },
-
-  profileButton: {
-    width: RFValue(22),
-    height: RFValue(22),
-  },
-
-  foodList: {
-    marginTop: 5,
-    marginBottom: 150,
-    flex: 1,
-  },
-  sortContainer: {
-    padding: 20,
-    // backgroundColor: "#f8f8f8",
-    borderBottomWidth: 1,
-    // borderColor: "#ddd",
-    height: 140,
+  headlineRow: {
+    position: "relative",
     justifyContent: "center",
-  },
-  sortText: {
-    fontSize: 20,
-    fontWeight: "bold",
+    alignItems: "center",
+    marginTop: 15,
     marginBottom: 10,
   },
+  iconContainer: {
+    position: "absolute",
+    right: 15,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  // foodList: {
+  //   marginTop: 5,
+  //   marginBottom: 150,
+  //   flex: 1,
+  // },
+
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -409,17 +374,17 @@ const style = StyleSheet.create({
     textAlign: "left",
     color: "#555",
   },
-  searchBarContainer: {
-    marginTop: 10,
-    marginHorizontal: 10,
-    borderRadius: 10,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
+  // searchBarContainer: {
+  //   marginTop: 10,
+  //   marginHorizontal: 10,
+  //   borderRadius: 10,
+  //   overflow: "hidden",
+  //   shadowColor: "#000",
+  //   shadowOffset: { width: 0, height: 1 },
+  //   shadowOpacity: 0.1,
+  //   shadowRadius: 2,
+  //   elevation: 2,
+  // },
 });
 
-export default HomeScreen;
+export default ListViewScreen;

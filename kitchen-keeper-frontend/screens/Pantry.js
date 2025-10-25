@@ -2,6 +2,8 @@ import { View, StyleSheet, ImageBackground, ScrollView } from "react-native";
 import FoodItem from "../components/food/FoodItem";
 import FoodModal from "../components/modals/FoodModal";
 import useFoodHandlers from "../hooks/useFoodHandlers";
+import SafeContainer from "../components/SafeContainer";
+
 const Pantry = () => {
   const {
     foods,
@@ -26,7 +28,7 @@ const Pantry = () => {
   const foodRows = chunkArray(foods, 3);
 
   return (
-    <View style={styles.container}>
+    <SafeContainer>
       <ImageBackground
         source={require("../assets/backgrounds/pantryBackgroundv3.png")}
         style={styles.pantryBackground}
@@ -63,7 +65,7 @@ const Pantry = () => {
           selectedFood={selectedFood}
         />
       </ImageBackground>
-    </View>
+    </SafeContainer>
   );
 };
 const styles = StyleSheet.create({

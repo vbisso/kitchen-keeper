@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useFoodContext } from "../context/FoodContext";
 import { scheduleExpirationNotification } from "../services/notificationService";
 
-export default function useFoodHandlers(sortBy = "expDate") {
+export default function useFoodHandlers(loadFoods) {
+  // console.log("loadFoods is:", typeof loadFoods);
   const [selectedFood, setSelectedFood] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   // const [sortBy, setSortBy] = useState("expDate")'
@@ -17,18 +18,24 @@ export default function useFoodHandlers(sortBy = "expDate") {
     setSelectedFood(food); // Set selected food for editing
     setModalVisible(true);
   };
-  const handleDeleteFood = (index) => {
-    deleteFood(index);
+  const handleDeleteFood = async (index) => {
+    await deleteFood(index);
+    await loadFoods();
   };
   const handleSaveFood = async (foodData) => {
     try {
       await saveFoods(foodData);
       await scheduleExpirationNotification(foodData, foodData.expDate);
+
       setSelectedFood(null);
       setModalVisible(false);
+
+      await loadFoods();
     } catch (error) {
       console.error("Error saving food:", error);
     }
+
+    await loadFoods();
   };
 
   const handleCloseModal = () => {

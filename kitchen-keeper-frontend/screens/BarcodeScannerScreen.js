@@ -1,5 +1,6 @@
 // BarcodeScannerScreen.js
 import React, { useState, useEffect, useRef } from "react";
+import SafeContainer from "../components/SafeContainer";
 import { Text, View, StyleSheet, Alert, Button } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import FoodModal from "../components/modals/FoodModal";
@@ -88,7 +89,7 @@ export default function BarcodeScannerScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeContainer>
       {!scanned && (
         <CameraView
           ref={cameraRef}
@@ -117,7 +118,7 @@ export default function BarcodeScannerScreen({ navigation }) {
           setModalVisible(false);
         }}
       />
-    </View>
+    </SafeContainer>
   );
 }
 

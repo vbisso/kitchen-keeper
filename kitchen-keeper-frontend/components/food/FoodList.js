@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(12),
   },
   itemContainer: {
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
     flex: 1,
     flexDirection: "row",
     alignSelf: "center",

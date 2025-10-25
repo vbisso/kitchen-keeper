@@ -5,7 +5,9 @@ const DueTodayItemsStatCard = ({ counts }) => {
   return (
     <TouchableOpacity
       style={styles.statCard}
-      onPress={() => navigation.navigate("AllItems")}
+      onPress={() =>
+        navigation.navigate("ListView", { filterType: "dueToday" })
+      }
     >
       <View style={styles.statCardFlex}>
         <Image

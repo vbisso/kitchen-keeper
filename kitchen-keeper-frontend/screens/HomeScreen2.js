@@ -8,7 +8,9 @@ import {
   Image,
   Pressable,
 } from "react-native";
+import SafeContainer from "../components/SafeContainer";
 import useFoodData from "../hooks/useFoodData";
+import useFoodHandlers from "../hooks/useFoodHandlers";
 import FoodModal from "../components/modals/FoodModal";
 import AddOptionModal from "../components/modals/AddOptionModal";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -21,49 +23,33 @@ import Footer from "../components/modals/Footer";
 import { useFocusEffect } from "@react-navigation/native";
 import useUserData from "../hooks/useUserData";
 import { useNavigation } from "@react-navigation/native";
+import Header from "../components/modals/Header";
 const HomeScreen2 = () => {
-  const { counts, loadFoods } = useFoodData();
-  const { data: user } = useUserData();
+  const { counts, loadFoods } = useFoodData("expDate");
   const navigation = useNavigation();
-  //   console.log("user:", user.firstName);
-
-  const formattedDate = new Date()
-    .toLocaleDateString("en-US", {
-      weekday: "long",
-      day: "2-digit",
-      month: "short",
-    })
-    .replace(/(\w+), (\w+) (\d+)/, "$1, $3 $2");
+  const {
+    foods,
+    selectedFood,
+    modalVisible,
+    handleAddFood,
+    handleDeleteFood,
+    handleSaveFood,
+    handleCloseModal,
+    setModalVisible,
+    optionModalVisible,
+    setOptionModalVisible,
+  } = useFoodHandlers(loadFoods);
 
   useFocusEffect(
     React.useCallback(() => {
       loadFoods(); // reload data every time the screen comes into focus
     }, [])
   );
-
   return (
-    <View style={styles.container}>
+    <SafeContainer>
       <ScrollView>
         {/* Header */}
-        <View style={styles.headerContainer}>
-          <View style={styles.userInfoContainer}>
-            <Text style={styles.name}>Welcome, {user?.firstName || ""}</Text>
-            <Text style={styles.date}>{formattedDate}</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Profile");
-            }}
-          >
-            <Image
-              style={{
-                width: 30,
-                height: 30,
-              }}
-              source={require("../assets/icons/Setting.png")}
-            ></Image>
-          </TouchableOpacity>
-        </View>
+        <Header></Header>
 
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
@@ -82,39 +68,32 @@ const HomeScreen2 = () => {
 
       {/* Footer */}
 
-      <Footer style={styles.footerContainer}></Footer>
-    </View>
+      <Footer handleAddFood={handleAddFood}></Footer>
+      <AddOptionModal
+        visible={optionModalVisible}
+        onClose={() => setOptionModalVisible(false)}
+        onTakePhoto={() => {
+          navigation.navigate("Take Photo"), setOptionModalVisible(false);
+        }}
+        onManualEntry={() => {
+          setModalVisible(true);
+          setOptionModalVisible(false);
+        }}
+        onScanBarcode={() => {
+          navigation.navigate("Scan"), setOptionModalVisible(false);
+        }}
+      ></AddOptionModal>
+      <FoodModal
+        visible={modalVisible}
+        onClose={handleCloseModal}
+        onSave={handleSaveFood}
+        onDelete={handleDeleteFood}
+        selectedFood={selectedFood}
+      />
+    </SafeContainer>
   );
 };
 const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  userInfoContainer: {
-    flexDirection: "column",
-
-    alignItems: "flex-start",
-  },
-  name: {
-    fontSize: RFValue(20),
-    fontFamily: "Lexend-SemiBold",
-  },
-  date: {
-    color: "#838A8F",
-    fontSize: RFValue(12),
-    fontFamily: "Lexend-Regular",
-  },
-
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#f5f5f5",
-    // backgroundColor: "red",
-  },
-
   statsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -124,14 +103,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     flexWrap: "wrap",
     justifyContent: "space-between",
-  },
-  footerContainer: {
-    backgroundColor: "red",
-    position: "absolute",
-    bottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
   },
 });
 export default HomeScreen2;

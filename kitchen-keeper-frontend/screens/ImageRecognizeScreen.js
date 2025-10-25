@@ -7,6 +7,8 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+import SafeContainer from "../components/SafeContainer";
+
 import * as ImagePicker from "expo-image-picker";
 import FoodModal from "../components/modals/FoodModal";
 import useFoodHandlers from "../hooks/useFoodHandlers";
@@ -105,7 +107,7 @@ export default function ImageRecognizeScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeContainer>
       <Button title="📸 Take Photo" onPress={takePhoto} />
       <View style={{ height: 10 }} />
       <Button title="🖼 Choose from Library" onPress={pickImage} />
@@ -133,7 +135,7 @@ export default function ImageRecognizeScreen() {
           setModalVisible(false);
         }}
       />
-    </View>
+    </SafeContainer>
   );
 }
 

@@ -1,38 +1,43 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-const Footer = () => {
+const Footer = ({ handleAddFood }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.footer}>
-      <View>
+      <TouchableOpacity
+        style={styles.footerItem}
+        onPress={() => navigation.navigate("Home")}
+      >
         <Image
           source={require("../../assets/icons/Home.png")}
-          //   style={{
-          //     width: "25%",
-          //     height: "25%",
-          //     resizeMode: "contain",
-          //   }}
+          style={{
+            resizeMode: "contain",
+            width: 35,
+            height: 35,
+          }}
         ></Image>
         <Text>Home</Text>
-      </View>
-      <View>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.footerItem} onPress={handleAddFood}>
         <Image
           source={require("../../assets/icons/Plus.png")}
-          //   style={{
-          //     width: "35%",
-          //     height: "35%",
-          //     resizeMode: "contain",
-          //   }}
+          style={{
+            resizeMode: "contain",
+            width: 55,
+            height: 55,
+            marginTop: -5,
+          }}
         ></Image>
-      </View>
-      <View>
+      </TouchableOpacity>
+      <View style={styles.footerItem}>
         <Image
           source={require("../../assets/icons/Chart.png")}
-          //   style={{
-          //     width: "100%",
-          //     height: "100%",
-          //     resizeMode: "contain",
-          //   }}
+          style={{
+            resizeMode: "contain",
+            width: 35,
+            height: 35,
+          }}
         ></Image>
         <Text>Insights</Text>
       </View>
@@ -43,8 +48,17 @@ export default Footer;
 
 const styles = StyleSheet.create({
   footer: {
-    width: "100%",
+    width: "80%",
+    // height: 50,
     flexDirection: "row",
     justifyContent: "space-between",
+    // backgroundColor: "red",
+    margin: "auto",
+    paddingBottom: 10,
+  },
+  footerItem: {
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 5,
   },
 });

@@ -5,7 +5,9 @@ const UpcomingItemsStatCard = ({ counts }) => {
   return (
     <TouchableOpacity
       style={styles.statCard}
-      onPress={() => navigation.navigate("AllItems")}
+      onPress={() =>
+        navigation.navigate("ListView", { filterType: "upcoming" })
+      }
     >
       <View style={styles.statCardFlex}>
         <Image
@@ -15,7 +17,7 @@ const UpcomingItemsStatCard = ({ counts }) => {
             height: 45,
           }}
         ></Image>
-        <Text style={styles.statNumber}>{counts.dueToday}</Text>
+        <Text style={styles.statNumber}>{counts.upcoming}</Text>
       </View>
       <View style={styles.statCardFlex}>
         <Text style={styles.statLabel}>Upcoming</Text>
