@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import FoodItem from "./FoodItem";
 import { RFValue } from "react-native-responsive-fontsize";
+import { useNavigation } from "@react-navigation/native";
 
 const FoodList = ({
   foods,
@@ -31,6 +32,7 @@ const FoodList = ({
       }
       return 0;
     });
+  const navigation = useNavigation();
 
   return (
     <View>
@@ -51,7 +53,7 @@ const FoodList = ({
             <FoodItem
               value={food}
               onDelete={() => onDelete(food._id)}
-              onEdit={() => onEdit(food)}
+              onEdit={() => navigation.navigate("FoodDetail", { food })}
               view={view}
               onLongPress={() => onLongPress(food._id)}
               onToggleSelect={() => onToggleSelect(food._id)}

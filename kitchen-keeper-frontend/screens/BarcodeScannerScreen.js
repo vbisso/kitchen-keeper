@@ -13,6 +13,7 @@ import { Vibration } from "react-native";
 import { lastUPC } from "../services/processUPCData";
 
 export default function BarcodeScannerScreen({ navigation }) {
+  console.log("✅ Barcode screen mounted");
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const cameraRef = useRef(null);
@@ -22,15 +23,17 @@ export default function BarcodeScannerScreen({ navigation }) {
     useFoodHandlers();
 
   useEffect(() => {
+    console.log("Camera permission:", permission);
     if (!permission) {
       requestPermission();
     }
-  }, []);
+  }, [permission]);
 
   const scanLock = useRef(false);
   const scannedUPCs = useRef(new Set());
 
   const handleBarCodeScanned = ({ type, data }) => {
+    console.log("📸 Barcode detected:", type, data);
     if (scanLock.current || scannedUPCs.current.has(data) || scanned) return;
 
     scanLock.current = true;
@@ -89,13 +92,23 @@ export default function BarcodeScannerScreen({ navigation }) {
   }
 
   return (
-    <SafeContainer>
+    <View style={styles.container}>
       {!scanned && (
         <CameraView
           ref={cameraRef}
+          enableBarcodeScanner={true}
+          facing="back"
           onBarcodeScanned={handleBarCodeScanned}
           barcodeScannerSettings={{
-            barcodeTypes: ["qr", "ean13", "upc_a"],
+            barcodeTypes: [
+              "qr",
+              "ean13",
+              "ean8",
+              "upc_a",
+              "upc_e",
+              "code128",
+              "code39",
+            ],
           }}
           style={StyleSheet.absoluteFillObject}
         />
@@ -118,7 +131,7 @@ export default function BarcodeScannerScreen({ navigation }) {
           setModalVisible(false);
         }}
       />
-    </SafeContainer>
+    </View>
   );
 }
 

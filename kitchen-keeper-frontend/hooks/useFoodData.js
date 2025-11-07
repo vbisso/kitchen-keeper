@@ -157,6 +157,14 @@ export default function useFoodData(sortBy) {
     setCounts(newCounts);
   };
 
+  const daysUntilExpiration = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diff = date - today;
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return days;
+  };
+
   const filterFoodsByType = (foods, filterType) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -178,9 +186,9 @@ export default function useFoodData(sortBy) {
         );
       if (filterType === "expired")
         return f.expDate && new Date(f.expDate) < today;
-      if (filterType === "fridge") return f.view === "Fridge";
-      if (filterType === "pantry") return f.view === "Pantry";
-      if (filterType === "freezer") return f.view === "Freezer";
+      if (filterType === "Fridge") return f.view === "Fridge";
+      if (filterType === "Pantry") return f.view === "Pantry";
+      if (filterType === "Freezer") return f.view === "Freezer";
       return true;
     });
   };
@@ -193,78 +201,6 @@ export default function useFoodData(sortBy) {
     handleEdit,
     counts,
     filterFoodsByType,
+    daysUntilExpiration,
   };
-  // Helper function to check if date is today
-  // const isToday = (date) => {
-  //   const today = new Date();
-  //   const checkDate = new Date(date);
-  //   return (
-  //     checkDate.getDate() === today.getDate() &&
-  //     checkDate.getMonth() === today.getMonth() &&
-  //     checkDate.getFullYear() === today.getFullYear()
-  //   );
-  // };
-
-  // Helper function to check if date is within the next 7 days (not including today)
-  // const isUpcomingSoon = (date) => {
-  //   const today = new Date();
-  //   today.setHours(0, 0, 0, 0);
-
-  //   const sevenDaysFromNow = new Date(today);
-  //   sevenDaysFromNow.setDate(today.getDate() + 7);
-
-  //   const checkDate = new Date(date);
-  //   checkDate.setHours(0, 0, 0, 0);
-
-  //   return checkDate > today && checkDate <= sevenDaysFromNow;
-  // };
-
-  // // Helper function to check if date is expired
-  // const isExpired = (date) => {
-  //   const today = new Date();
-  //   today.setHours(0, 0, 0, 0);
-  //   const checkDate = new Date(date);
-  //   checkDate.setHours(0, 0, 0, 0);
-  //   return checkDate < today;
-  // };
-
-  // const isFridge = (view) => {
-  //   return view === "Fridge";
-  // };
-  // const isPantry = (view) => {
-  //   return view === "Pantry";
-  // };
-  // const isFreezer = (view) => {
-  //   return view === "Freezer";
-  // };
-
-  // // Calculate counts of food items
-  // const counts = useMemo(() => {
-  //   const allItems = foods.length;
-  //   const dueToday = foods.filter(
-  //     (food) => food.expDate && isToday(food.expDate)
-  //   ).length;
-  //   const upcoming = foods.filter(
-  //     (food) => food.expDate && isUpcomingSoon(food.expDate)
-  //   ).length;
-  //   const expired = foods.filter(
-  //     (food) => food.expDate && isExpired(food.expDate)
-  //   ).length;
-
-  //   const fridgeCount = foods.filter((food) => isFridge(food.view)).length;
-  //   const pantryCount = foods.filter((food) => isPantry(food.view)).length;
-  //   const freezerCount = foods.filter((food) => isFreezer(food.view)).length;
-
-  //   return {
-  //     allItems,
-  //     dueToday,
-  //     upcoming,
-  //     expired,
-  //     fridgeCount,
-  //     pantryCount,
-  //     freezerCount,
-  //   };
-  // }, [foods]);
-
-  //calculate items in fridge, pantry or freezer
 }

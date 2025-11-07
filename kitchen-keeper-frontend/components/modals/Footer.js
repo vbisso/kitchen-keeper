@@ -48,13 +48,14 @@ export default Footer;
 
 const styles = StyleSheet.create({
   footer: {
-    width: "80%",
-    // height: 50,
     flexDirection: "row",
     justifyContent: "space-between",
-    // backgroundColor: "red",
-    margin: "auto",
     paddingBottom: 10,
+    position: "absolute",
+    bottom: 30,
+    width: "80%",
+    margin: "auto",
+    alignSelf: "center",
   },
   footerItem: {
     flexDirection: "column",

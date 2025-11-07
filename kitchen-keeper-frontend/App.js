@@ -15,6 +15,8 @@ import ListViewScreen from "./screens/ListViewScreen";
 
 import HomeScreen2 from "./screens/HomeScreen2";
 
+import FoodDetailScreen from "./screens/FoodDetailScreen";
+
 import Fridge from "./screens/Fridge";
 import Pantry from "./screens/Pantry";
 import BarcodeScannerScreen from "./screens/BarcodeScannerScreen";
@@ -57,6 +59,11 @@ function AppNavigator() {
           <Stack.Screen
             name="Take Photo"
             component={ImageRecognizeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Food Detail"
+            component={FoodDetailScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

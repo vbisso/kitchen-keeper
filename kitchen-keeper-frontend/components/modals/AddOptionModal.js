@@ -10,6 +10,7 @@ import {
   Image,
 } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
+import { useNavigation } from "@react-navigation/native";
 
 const { height } = Dimensions.get("window");
 
@@ -26,7 +27,7 @@ const AddOptionModal = ({
         <View style={styles.modalContent}>
           <TouchableOpacity onPress={onClose} style={styles.cancel}>
             <Image
-              source={require("../../assets/icons/cancel_icon.png")}
+              source={require("../../assets/icons/cancel.png")}
               style={styles.cancelIcon}
             ></Image>
           </TouchableOpacity>
@@ -34,15 +35,15 @@ const AddOptionModal = ({
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={onTakePhoto}>
               <Image
-                source={require("../../assets/icons/camera_icon.png")}
+                source={require("../../assets/icons/Camera.png")}
                 style={styles.icon}
               />
-              <Text style={styles.buttonText}>Take Photo</Text>
+              <Text style={styles.buttonText}>Use Photo</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={onManualEntry}>
               <Image
-                source={require("../../assets/icons/edit_icon.png")}
+                source={require("../../assets/icons/Edit Square.png")}
                 style={styles.icon}
               ></Image>
               <Text style={styles.buttonText}>Enter Manually</Text>
@@ -50,7 +51,7 @@ const AddOptionModal = ({
 
             <TouchableOpacity style={styles.button} onPress={onScanBarcode}>
               <Image
-                source={require("../../assets/icons/barcode.png")}
+                source={require("../../assets/icons/Scan.png")}
                 style={styles.icon}
               ></Image>
               <Text style={styles.buttonText}>Scan Barcode</Text>
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#000000",
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 10,

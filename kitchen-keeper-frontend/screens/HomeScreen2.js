@@ -69,6 +69,7 @@ const HomeScreen2 = () => {
       {/* Footer */}
 
       <Footer handleAddFood={handleAddFood}></Footer>
+
       <AddOptionModal
         visible={optionModalVisible}
         onClose={() => setOptionModalVisible(false)}
@@ -76,8 +77,8 @@ const HomeScreen2 = () => {
           navigation.navigate("Take Photo"), setOptionModalVisible(false);
         }}
         onManualEntry={() => {
-          setModalVisible(true);
-          setOptionModalVisible(false);
+          navigation.navigate("Food Detail", { food: null }),
+            setOptionModalVisible(false);
         }}
         onScanBarcode={() => {
           navigation.navigate("Scan"), setOptionModalVisible(false);
@@ -103,6 +104,9 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     flexWrap: "wrap",
     justifyContent: "space-between",
+  },
+  scrollViewContainer: {
+    marginBottom: 10,
   },
 });
 export default HomeScreen2;

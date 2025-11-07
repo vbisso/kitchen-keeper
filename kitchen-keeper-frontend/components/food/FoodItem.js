@@ -4,6 +4,8 @@ import { SwipeRow } from "react-native-swipe-list-view";
 import Icon from "react-native-vector-icons/Ionicons";
 import { RFValue } from "react-native-responsive-fontsize";
 import getFoodIcon from "../../utils/getFoodIcon";
+import useFoodData from "../../hooks/useFoodData";
+import { useNavigation } from "@react-navigation/native";
 
 const FoodItem = ({
   value,
@@ -14,18 +16,16 @@ const FoodItem = ({
   isSelected,
   isSelectionMode,
 }) => {
+  const navigation = useNavigation();
   const handlePress = () => {
     if (isSelectionMode) {
       onToggleSelect();
     } else {
-      onEdit(value);
+      navigation.navigate("Food Detail", { food: value });
     }
   };
 
-  // const pressableStyles = [
-  //   styles.rowFront,
-  //   isSelected && { backgroundColor: "#cce5ff" },
-  // ];
+  const { daysUntilExpiration } = useFoodData();
 
   if (view === "Fridge" || view === "Pantry") {
     return (
@@ -62,13 +62,18 @@ const FoodItem = ({
         )}
         <View style={styles.info}>
           <Text style={styles.name}>{value.name}</Text>
-          <Text style={styles.expDate}>
-            Exp Date: {value.expDate.toDateString()}
-          </Text>
+
+          {daysUntilExpiration(value.expDate) < 0 ? (
+            <Text style={styles.expDateExpired}>Expired</Text>
+          ) : (
+            <Text style={styles.expDate}>
+              In {daysUntilExpiration(value.expDate)} days
+            </Text>
+          )}
         </View>
-        <Text style={styles.quantity}>
-          {value.quantity} {value.unit}
-        </Text>
+        <View style={styles.quantityContainer}>
+          <Text style={styles.quantity}>x{value.quantity}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -78,78 +83,79 @@ const styles = StyleSheet.create({
   rowFront: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
+    backgroundColor: "#EDEDED",
     height: 75,
     // borderBottomWidth: 1,
-    borderColor: "#ccc",
-    minWidth: "100%",
+
+    minWidth: "97%",
     borderRadius: 12,
-    padding: 12,
-    marginVertical: 3,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+
+    marginVertical: 8,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.25,
     shadowRadius: 3,
     elevation: 2,
   },
 
   info: {
     marginLeft: 10,
+
     flex: 1,
+  },
+  expDateExpired: {
+    fontSize: RFValue(12),
+    fontFamily: "Lexend-SemiBold",
+    width: "40%",
+    paddingHorizontal: 5,
+    paddingVertical: 3,
+    textAlign: "center",
+    backgroundColor: "#FF0000",
+    borderRadius: 20,
+    marginTop: 5,
+    color: "#fff",
   },
   expDate: {
     fontSize: RFValue(12),
+    fontFamily: "Lexend-Regular",
+    width: "40%",
+    paddingHorizontal: 5,
+    paddingVertical: 3,
+    textAlign: "center",
+    backgroundColor: "#D9D9D9",
+    borderRadius: 20,
+    marginTop: 5,
+    color: "#848484",
   },
   name: {
     fontSize: RFValue(12),
-    fontWeight: "600",
+    fontFamily: "Lexend-SemiBold",
+
     textAlign: "left",
     color: "#333",
   },
-  quantity: {
-    // marginRight: 10,
-    fontSize: RFValue(12),
-    // position: "absolute",
-    // right: 0,
-    backgroundColor: "#007AFF",
-    color: "#fff",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
+  quantityContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#D9D9D9",
+    marginHorizontal: 4,
+    borderRadius: 100,
     overflow: "hidden",
-    textAlign: "center",
-    minWidth: 50,
+    width: 45,
+    height: 45,
   },
-  hiddenRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    justifySelf: "center",
-    marginVertical: 3,
-    height: 75,
+  quantity: {
+    fontFamily: "Lexend-Regular",
+    fontSize: RFValue(13),
+    color: "#848484",
+
+    // minWidth: 50,
   },
-  deleteBtn: {
-    backgroundColor: "red",
-    width: 70,
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    borderTopEndRadius: 12,
-    borderBottomEndRadius: 12,
-    padding: 12,
-  },
-  modifyBtn: {
-    backgroundColor: "orange",
-    width: 70,
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    padding: 12,
-  },
-  btnText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
+
   iconContainer: {
     flexDirection: "column",
     alignItems: "center",

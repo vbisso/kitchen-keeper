@@ -7,7 +7,9 @@ const ViewStatCard = ({ counts, destination }) => {
   return (
     <TouchableOpacity
       style={styles.statCard}
-      onPress={() => navigation.navigate(destination)}
+      onPress={() =>
+        navigation.navigate("ListView", { filterType: destination })
+      }
     >
       <View style={styles.statCardFlex}>
         {destination === "Fridge" ? (

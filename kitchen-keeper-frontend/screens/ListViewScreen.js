@@ -77,8 +77,8 @@ const ListViewScreen = ({ navigation, route }) => {
     dueToday: "Due Today",
     upcoming: "Upcoming Items",
     expired: "Expired Items",
-    fridge: "Fridge Items",
-    pantry: "Pantry Items",
+    Fridge: "Fridge Items",
+    Pantry: "Pantry Items",
   };
 
   return (
@@ -126,6 +126,7 @@ const ListViewScreen = ({ navigation, route }) => {
             <Text
               style={{
                 marginHorizontal: 10,
+                fontFamily: "Lexend-Regular",
                 fontWeight: sortBy === "expDate" ? "bold" : "normal",
               }}
             >
@@ -136,6 +137,7 @@ const ListViewScreen = ({ navigation, route }) => {
             <Text
               style={{
                 marginHorizontal: 10,
+                fontFamily: "Lexend-Regular",
                 fontWeight: sortBy === "name" ? "bold" : "normal",
               }}
             >
@@ -158,7 +160,7 @@ const ListViewScreen = ({ navigation, route }) => {
             <TouchableOpacity
               key={cat}
               onPress={() => setFilterCategory(cat)}
-              style={{ margin: 5 }}
+              style={{ margin: 5, fontFamily: "Lexend-Regular" }}
             >
               <Text
                 style={{
@@ -189,48 +191,24 @@ const ListViewScreen = ({ navigation, route }) => {
           </Text>
         </TouchableOpacity>
       )}
+      <View style={style.listContainer}>
+        <ScrollView>
+          <FoodList
+            foods={filteredFoods}
+            onDelete={(id) => handleDeleteFood(id)}
+            onEdit={handleEditFood}
+            searchText={searchText}
+            onLongPress={handleLongPress}
+            onToggleSelect={handleToggleSelect}
+            selectedIds={selectedIds}
+            isSelectionMode={isSelectionMode}
+            sortBy={sortBy}
+            filterCategory={filterCategory}
+            navigation={navigation}
+          />
+        </ScrollView>
+      </View>
 
-      <ScrollView style={style.foodList}>
-        <FoodList
-          foods={filteredFoods}
-          onDelete={(id) => handleDeleteFood(id)}
-          onEdit={handleEditFood}
-          searchText={searchText}
-          onLongPress={handleLongPress}
-          onToggleSelect={handleToggleSelect}
-          selectedIds={selectedIds}
-          isSelectionMode={isSelectionMode}
-          sortBy={sortBy}
-          filterCategory={filterCategory}
-        />
-      </ScrollView>
-      {/* <View style={style.footerContainer}>
-        {foods.length === 0 && (
-          <View>
-            <View style={style.arrowContainer}>
-              <Image
-                style={style.arrowImage}
-                source={require("../assets/icons/arrow_icon.png")}
-              ></Image>
-            </View>
-            <View style={style.arrowTextContainer}>
-              <Text style={style.arrowText}>
-                {" "}
-                Click here{"\n"} to add an item
-              </Text>
-            </View>
-          </View>
-        )}
-
-        <View style={style.footer}>
-          <Pressable onPress={handleAddFood} style={style.addButton}>
-            <Image
-              style={style.addButtonImage}
-              source={require("../assets/icons/nav_add icon.png")}
-            />
-          </Pressable>
-        </View>
-      </View> */}
       <Footer handleAddFood={handleAddFood}></Footer>
       <AddOptionModal
         visible={optionModalVisible}
@@ -239,8 +217,8 @@ const ListViewScreen = ({ navigation, route }) => {
           navigation.navigate("Take Photo"), setOptionModalVisible(false);
         }}
         onManualEntry={() => {
-          setModalVisible(true);
-          setOptionModalVisible(false);
+          navigation.navigate("Food Detail", { food: null }),
+            setOptionModalVisible(false);
         }}
         onScanBarcode={() => {
           navigation.navigate("Scan"), setOptionModalVisible(false);
@@ -276,6 +254,9 @@ const style = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  listContainer: {
+    maxHeight: "65%",
+  },
 
   // foodList: {
   //   marginTop: 5,
@@ -287,22 +268,7 @@ const style = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-  footerContainer: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-  },
-  footer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "start",
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
-    paddingTop: 15,
-    paddingBottom: 25,
-    backgroundColor: "#FEFEFF",
-  },
+
   ButtonContainer: {
     display: "flex",
     flexDirection: "column",
@@ -316,15 +282,7 @@ const style = StyleSheet.create({
     width: 65,
     height: 65,
   },
-  addButton: {
-    // paddingHorizontal: 5,
-    position: "absolute",
-    top: -40,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-  },
+
   addButtonImage: {
     width: 80,
     height: 80,

@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { useFoodContext } from "../context/FoodContext";
 import { scheduleExpirationNotification } from "../services/notificationService";
+import useFoodData from "./useFoodData";
+import { useNavigation } from "@react-navigation/native";
 
 export default function useFoodHandlers(loadFoods) {
+  const navigation = useNavigation();
+
   // console.log("loadFoods is:", typeof loadFoods);
   const [selectedFood, setSelectedFood] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -16,11 +20,13 @@ export default function useFoodHandlers(loadFoods) {
   };
   const handleEditFood = (food) => {
     setSelectedFood(food); // Set selected food for editing
-    setModalVisible(true);
+    setOptionModalVisible(true);
   };
   const handleDeleteFood = async (index) => {
     await deleteFood(index);
-    await loadFoods();
+    if (typeof loadFoods === "function") {
+      await loadFoods(); // ✅ safe check
+    }
   };
   const handleSaveFood = async (foodData) => {
     try {
@@ -30,12 +36,12 @@ export default function useFoodHandlers(loadFoods) {
       setSelectedFood(null);
       setModalVisible(false);
 
-      await loadFoods();
+      if (typeof loadFoods === "function") {
+        await loadFoods(); // ✅ safe check
+      }
     } catch (error) {
-      console.error("Error saving food:", error);
+      console.error("Error saving food caca1:", error);
     }
-
-    await loadFoods();
   };
 
   const handleCloseModal = () => {

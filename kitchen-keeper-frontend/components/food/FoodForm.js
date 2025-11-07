@@ -19,7 +19,7 @@ import categoryKeywords from "../../assets/data/categories.json";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useRoute } from "@react-navigation/native";
 
-const FoodForm = ({ onSave, onClose, onDelete, selectedFood, isEditing }) => {
+const FoodForm = ({ onSave, onDelete, selectedFood, isEditing }) => {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [date, setDate] = useState(new Date());
@@ -103,14 +103,13 @@ const FoodForm = ({ onSave, onClose, onDelete, selectedFood, isEditing }) => {
     // Don't reset or close here; parent handles success/error
   };
 
-  const handleCancel = () => {
-    resetForm();
-    onClose();
-  };
+  // const handleCancel = () => {
+  //   resetForm();
+  //   onClose();
+  // };
 
   const handleDelete = () => {
     onDelete(selectedFood._id);
-    onClose();
   };
 
   return (
@@ -119,12 +118,12 @@ const FoodForm = ({ onSave, onClose, onDelete, selectedFood, isEditing }) => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.container}>
-          <TouchableOpacity onPress={handleCancel} style={styles.cancel}>
+          {/* <TouchableOpacity onPress={handleCancel} style={styles.cancel}>
             <Image
               source={require("../../assets/icons/cancel_icon.png")}
               style={styles.cancelIcon}
             ></Image>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View style={styles.foodFormContainer}>
             <Text style={styles.text}>
               {selectedFood ? "Edit Food Item" : "Add Food Item"}
