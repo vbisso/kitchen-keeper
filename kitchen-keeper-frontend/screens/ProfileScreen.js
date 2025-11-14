@@ -6,10 +6,12 @@ import useUserData from "../hooks/useUserData";
 import { ActivityIndicator } from "react-native";
 import SafeContainer from "../components/SafeContainer";
 import Header from "../components/modals/Header";
+import { useNavigation } from "@react-navigation/native";
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen() {
   const { data: user, loading, error } = useUserData();
   const { logout } = useAuth();
+  const navigation = useNavigation();
 
   if (loading) return <ActivityIndicator />;
 
@@ -20,7 +22,12 @@ export default function ProfileScreen({ navigation }) {
       <Header></Header>
 
       {/* My Profile Section */}
-      <TouchableOpacity style={styles.section}>
+      <TouchableOpacity
+        style={styles.section}
+        onPress={() => {
+          navigation.navigate("Account");
+        }}
+      >
         <View style={styles.sectionRow}>
           <Icon name="person-circle-outline" size={24} color="#003366" />
           <Text style={styles.sectionText}>Account</Text>
@@ -29,7 +36,12 @@ export default function ProfileScreen({ navigation }) {
       </TouchableOpacity>
 
       {/* Settings Section */}
-      <TouchableOpacity style={styles.section}>
+      <TouchableOpacity
+        style={styles.section}
+        onPress={() => {
+          navigation.navigate("Settings");
+        }}
+      >
         <View style={styles.sectionRow}>
           <Icon name="settings-outline" size={24} color="#003366" />
           <Text style={styles.sectionText}>Settings</Text>

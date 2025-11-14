@@ -36,8 +36,8 @@ export default function FoodDetailScreen({ route, navigation }) {
   };
 
   return (
-    <SafeContainer>
-      <View style={styles.container}>
+    <SafeContainer style={styles.container}>
+      <View>
         {remainingItems.length > 0 && (
           <Text style={styles.counter}>
             Item {processedCount} of {totalItems}
@@ -56,8 +56,7 @@ export default function FoodDetailScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 15,
+    padding: 10,
   },
   counter: {
     fontSize: 20,

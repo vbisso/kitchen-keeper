@@ -58,8 +58,8 @@ export async function scheduleExpirationNotification(foodData, expirationDate) {
       body: `${foodName} is about to expire on ${formattedDate}`,
       sound: true,
     },
-    // trigger: triggerDate,
-    trigger: { seconds: 5 },
+    trigger: triggerDate,
+    // trigger: { seconds: 5 },
   });
   console.log(
     `🔔 Scheduled notification for ${foodName} on ${triggerDate} sent`

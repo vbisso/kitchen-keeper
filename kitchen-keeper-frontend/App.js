@@ -24,6 +24,8 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { FoodProvider } from "./context/FoodContext";
 import ProfileScreen from "./screens/ProfileScreen";
 import ImageRecognizeScreen from "./screens/ImageRecognizeScreen";
+import AccountDetailsScreen from "./screens/AccountDetailsScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 
 const Stack = createStackNavigator();
 
@@ -49,6 +51,16 @@ function AppNavigator() {
           <Stack.Screen
             name="Profile"
             component={ProfileScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Account"
+            component={AccountDetailsScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Settings"
+            component={SettingsScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

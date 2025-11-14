@@ -83,6 +83,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 50,
     width: "100%",
+
+    zIndex: 9999,
+    elevation: 9999,
   },
   button: {
     paddingHorizontal: 12,
