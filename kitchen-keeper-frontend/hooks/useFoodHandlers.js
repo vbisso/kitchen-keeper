@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useFoodContext } from "../context/FoodContext";
+import { useUser } from "../context/UserContext";
+
 import { scheduleExpirationNotification } from "../services/notificationService";
 import useFoodData from "./useFoodData";
 import { useNavigation } from "@react-navigation/native";
 
 export default function useFoodHandlers(loadFoods) {
   const navigation = useNavigation();
+  const { user } = useUser();
 
   // console.log("loadFoods is:", typeof loadFoods);
   const [selectedFood, setSelectedFood] = useState(null);
@@ -31,7 +34,11 @@ export default function useFoodHandlers(loadFoods) {
   const handleSaveFood = async (foodData) => {
     try {
       await saveFoods(foodData);
-      await scheduleExpirationNotification(foodData, foodData.expDate);
+      await scheduleExpirationNotification(
+        foodData,
+        foodData.expDate,
+        user?.notifyDaysBefore ?? 1
+      );
 
       setSelectedFood(null);
       setModalVisible(false);

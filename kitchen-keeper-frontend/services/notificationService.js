@@ -32,33 +32,47 @@ export async function registerForNotifications() {
  * scheduling notifications for food items
  * @param {string} foodName - Name of the food item
  * @param {string | Date} expirationDate - Date of expiration in stirng format or Date object
+ *  @param {number} daysBefore - How many days before to notify (default 1)
  */
 
-export async function scheduleExpirationNotification(foodData, expirationDate) {
+export async function scheduleExpirationNotification(
+  foodData,
+  expirationDate,
+  daysBefore = 1
+) {
   const expDate = new Date(expirationDate);
   const triggerDate = new Date(expDate);
-  triggerDate.setDate(triggerDate.getDate() - 1); //set to 1 day before expiration
-  const foodName = foodData.name;
-  const formattedDate = expirationDate.toLocaleDateString("en-US", {
-    weekday: "long",
-    day: "2-digit",
-    month: "short",
-  });
+  triggerDate.setDate(triggerDate.getDate() - daysBefore); //set to 1 day before expiration
 
-  if (triggerDate < new Date()) {
-    console.log(
-      "⚠️ Expiration date is too soon or in the past. Skipping notification."
-    );
+  // Force notification to fire at 9 AM local time
+  triggerDate.setHours(12, 0, 0, 0);
+
+  // Logging for debugging
+  console.log("Trigger date (UTC):", triggerDate.toISOString());
+  // console.log("Now (UTC):", new Date().toISOString());
+
+  const foodName = foodData.name;
+  // const formattedDate = expirationDate.toLocaleDateString("en-US", {
+  //   weekday: "long",
+  //   day: "2-digit",
+  //   month: "short",
+  // });
+
+  if (triggerDate.getTime() <= Date.now()) {
+    console.log("⚠️ Notification trigger is in the past. Skipping.");
     return;
   }
 
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "Food expiring soon!",
-      body: `${foodName} is about to expire on ${formattedDate}`,
+      body: `${foodData.name} expires on ${expDate.toDateString()}`,
       sound: true,
     },
-    trigger: triggerDate,
+    trigger: {
+      type: "date",
+      date: triggerDate,
+    },
     // trigger: { seconds: 5 },
   });
   console.log(

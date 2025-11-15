@@ -13,9 +13,9 @@ exports.getUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    console.log("debug");
+    console.log("REQ BODY:", req.body);
 
-    const { id, firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, notifyDaysBefore } = req.body;
 
     const updateFields = {};
 
@@ -23,6 +23,9 @@ exports.updateUser = async (req, res) => {
     if (firstName) updateFields.firstName = firstName;
     if (lastName) updateFields.lastName = lastName;
     if (email) updateFields.email = email;
+    if (notifyDaysBefore !== undefined) {
+      updateFields.notifyDaysBefore = notifyDaysBefore;
+    }
 
     if (password && password.trim() !== "") {
       const salt = await bcrypt.genSalt(10);

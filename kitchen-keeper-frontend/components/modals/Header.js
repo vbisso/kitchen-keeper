@@ -1,11 +1,13 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 // import React, { useState, useEffect } from "react";
-import useUserData from "../../hooks/useUserData";
+// import useUserData from "../../hooks/useUserData";
+import { useUser } from "../../context/UserContext";
 import { useNavigation } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
 
 const Header = () => {
-  const { data: user } = useUserData();
+  // const { data: user } = useUserData();
+  const { user } = useUser();
   const navigation = useNavigation();
   const formattedDate = new Date()
     .toLocaleDateString("en-US", {

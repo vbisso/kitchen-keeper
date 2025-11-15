@@ -10,13 +10,13 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SafeContainer from "../components/SafeContainer";
-import useUserData from "../hooks/useUserData";
+import { useUser } from "../context/UserContext";
 
 export default function AccountDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const { data, updateUser, loadUser } = useUserData();
+  const { user, updateUser } = useUser();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -25,14 +25,14 @@ export default function AccountDetailScreen() {
 
   // Load user data
   useEffect(() => {
-    if (data) {
-      setFirstName(data.firstName || "");
-      setLastName(data.lastName || "");
-      setEmail(data.email || "");
+    if (user) {
+      setFirstName(user.firstName || "");
+      setLastName(user.lastName || "");
+      setEmail(user.email || "");
 
       setLoading(false);
     }
-  }, [data]);
+  }, [user]);
   //   console.log(data);
 
   const handleSave = async () => {
@@ -41,7 +41,7 @@ export default function AccountDetailScreen() {
       //   console.log("caca!!", data._id);
 
       const res = await updateUser({
-        id: data._id,
+        id: user._id,
         firstName,
         lastName,
         email,

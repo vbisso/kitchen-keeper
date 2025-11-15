@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  notifyDaysBefore: {
+    type: Number,
+    default: 1,
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);
