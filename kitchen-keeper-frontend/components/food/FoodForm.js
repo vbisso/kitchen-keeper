@@ -19,7 +19,14 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useRoute } from "@react-navigation/native";
 import SafeContainer from "../SafeContainer";
 
-const FoodForm = ({ onSave, onDelete, selectedFood, isEditing }) => {
+const FoodForm = ({
+  onSave,
+  onDelete,
+  selectedFood,
+  isEditing,
+  onConsumed,
+  onWasted,
+}) => {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [date, setDate] = useState(new Date());
@@ -115,71 +122,6 @@ const FoodForm = ({ onSave, onDelete, selectedFood, isEditing }) => {
     Math.ceil((date - new Date()) / (1000 * 60 * 60 * 24))
   );
 
-  // return (
-  //   <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-  //     <KeyboardAvoidingView
-  //       behavior={Platform.OS === "ios" ? "padding" : "height"}
-  //     >
-  //       <View style={styles.container}>
-  //         {/* <TouchableOpacity onPress={handleCancel} style={styles.cancel}>
-  //           <Image
-  //             source={require("../../assets/icons/cancel_icon.png")}
-  //             style={styles.cancelIcon}
-  //           ></Image>
-  //         </TouchableOpacity> */}
-  //         <View style={styles.foodFormContainer}>
-  //           <Text style={styles.text}>
-  //             {selectedFood ? "Edit Food Item" : "Add Food Item"}
-  //           </Text>
-  //           <NameInput value={name} onChange={setName}></NameInput>
-  //           {suggestedCategory && !category && (
-  //             <View style={styles.suggestionContainer}>
-  //               <Text style={styles.suggestionText}>
-  //                 Suggested category: {suggestedCategory}
-  //               </Text>
-  //             </View>
-  //           )}
-  //           <CategoryPicker
-  //             value={category || suggestedCategory}
-  //             setCategory={setCategory}
-  //           ></CategoryPicker>
-  //           <DatePicker value={date} setDate={setDate}></DatePicker>
-  //           <QuantityStepper
-  //             value={quantity}
-  //             onChange={setQuantity}
-  //             unit={unit}
-  //             setUnit={setUnit}
-  //           />
-  //           <ViewPicker value={view} setView={setView}></ViewPicker>
-  //         </View>
-
-  //         <View style={styles.buttonFixPosition}>
-  //           <View style={styles.buttonsContainer}>
-  //             {isEditing && (
-  //               <TouchableOpacity
-  //                 onPress={handleDelete}
-  //                 style={styles.deleteBtn}
-  //               >
-  //                 <Text style={styles.deleteBtnText}>Delete</Text>
-  //               </TouchableOpacity>
-  //             )}
-
-  //             <TouchableOpacity
-  //               onPress={() => {
-  //                 handleSave();
-  //                 resetForm();
-  //               }}
-  //               style={styles.saveBtn}
-  //             >
-  //               <Text style={styles.saveBtnText}>Save</Text>
-  //             </TouchableOpacity>
-  //           </View>
-  //         </View>
-  //       </View>
-  //     </KeyboardAvoidingView>
-  //   </TouchableWithoutFeedback>
-  // );
-
   return (
     <View>
       {/* ===== Header Section ===== */}
@@ -230,13 +172,37 @@ const FoodForm = ({ onSave, onDelete, selectedFood, isEditing }) => {
       {/* ===== Action Buttons ===== */}
       <View style={styles.buttonContainer}>
         {isEditing && (
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-            <Text style={styles.deleteText}>Delete</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={handleDelete}
+            >
+              <Text style={styles.deleteText}>Delete</Text>
+            </TouchableOpacity>
+          </>
         )}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveText}>Save</Text>
         </TouchableOpacity>
+      </View>
+      <View style={styles.buttonContainer}>
+        {isEditing && (
+          <>
+            <TouchableOpacity
+              style={styles.buttonConsumed}
+              onPress={() => onConsumed(selectedFood._id)}
+            >
+              <Text>Mark as Consumed</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.buttonWasted}
+              onPress={() => onWasted(selectedFood._id)}
+            >
+              <Text>Mark as Wasted</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </View>
   );
@@ -321,6 +287,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
     width: "80%",
     marginTop: 25,
@@ -351,6 +318,22 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontWeight: "600",
     fontSize: RFValue(12),
+  },
+  buttonConsumed: {
+    flex: 1,
+    backgroundColor: "#EDEDED",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    marginRight: 10,
+  },
+
+  buttonWasted: {
+    flex: 1,
+    backgroundColor: "#EDEDED",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
   },
 });
 export default FoodForm;

@@ -27,6 +27,7 @@ import ProfileScreen from "./screens/ProfileScreen";
 import ImageRecognizeScreen from "./screens/ImageRecognizeScreen";
 import AccountDetailsScreen from "./screens/AccountDetailsScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import InsightsScreen from "./screens/InsightsScreen";
 
 const Stack = createStackNavigator();
 
@@ -87,6 +88,11 @@ function AppNavigator() {
           <Stack.Screen
             name="Pantry"
             component={Pantry}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Insights"
+            component={InsightsScreen}
             options={{ headerShown: false }}
           />
         </>

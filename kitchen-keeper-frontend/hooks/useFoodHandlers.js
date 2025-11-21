@@ -15,7 +15,8 @@ export default function useFoodHandlers(loadFoods) {
   const [modalVisible, setModalVisible] = useState(false);
   // const [sortBy, setSortBy] = useState("expDate")'
   const [optionModalVisible, setOptionModalVisible] = useState(false);
-  const { foods, saveFoods, deleteFood } = useFoodContext();
+  const { foods, saveFoods, deleteFood, markItemWasted, markItemConsumed } =
+    useFoodContext(); //useFoodData Context
 
   const handleAddFood = () => {
     setSelectedFood(null); // Clear selection for new food
@@ -56,6 +57,20 @@ export default function useFoodHandlers(loadFoods) {
     setSelectedFood(null); // Clear selection when closing
   };
 
+  const handleConsumedFood = async (id) => {
+    await markItemConsumed(id);
+    if (typeof loadFoods === "function") {
+      await loadFoods(); // ✅ safe check
+    }
+  };
+
+  const handleWastedFood = async (id) => {
+    await markItemWasted(id);
+    if (typeof loadFoods === "function") {
+      await loadFoods(); // ✅ safe check
+    }
+  };
+
   return {
     foods,
     selectedFood,
@@ -69,5 +84,7 @@ export default function useFoodHandlers(loadFoods) {
     setSelectedFood,
     optionModalVisible,
     setOptionModalVisible,
+    handleConsumedFood,
+    handleWastedFood,
   };
 }

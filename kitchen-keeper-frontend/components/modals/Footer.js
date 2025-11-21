@@ -30,7 +30,10 @@ const Footer = ({ handleAddFood }) => {
           }}
         ></Image>
       </TouchableOpacity>
-      <View style={styles.footerItem}>
+      <TouchableOpacity
+        style={styles.footerItem}
+        onPress={() => navigation.navigate("Insights")}
+      >
         <Image
           source={require("../../assets/icons/Chart.png")}
           style={{
@@ -40,7 +43,7 @@ const Footer = ({ handleAddFood }) => {
           }}
         ></Image>
         <Text>Insights</Text>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };

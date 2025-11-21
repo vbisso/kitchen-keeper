@@ -10,5 +10,7 @@ router.get("/", controller.getFoods);
 router.post("/", controller.addFood);
 router.put("/:id", controller.updateFood);
 router.delete("/:id", controller.deleteFood);
+router.post("/:id/consume", controller.consumeItem);
+router.post("/:id/waste", controller.wasteItem);
 
 module.exports = router;

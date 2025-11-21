@@ -5,7 +5,12 @@ import FoodForm from "../components/food/FoodForm";
 import useFoodHandlers from "../hooks/useFoodHandlers";
 
 export default function FoodDetailScreen({ route, navigation }) {
-  const { handleSaveFood, handleDeleteFood } = useFoodHandlers();
+  const {
+    handleSaveFood,
+    handleDeleteFood,
+    handleWastedFood,
+    handleConsumedFood,
+  } = useFoodHandlers();
   const selectedFood = route.params?.food || null;
   const remainingItems = route.params?.remainingItems || [];
   const totalItems = route.params?.totalItems || 1;
@@ -32,6 +37,17 @@ export default function FoodDetailScreen({ route, navigation }) {
 
   const handleDelete = async (id) => {
     await handleDeleteFood(id);
+
+    navigation.goBack();
+  };
+
+  const handleConsumed = async (id) => {
+    await handleConsumedFood(id);
+    navigation.goBack();
+  };
+
+  const handleWasted = async (id) => {
+    await handleWastedFood(id);
     navigation.goBack();
   };
 
@@ -48,6 +64,8 @@ export default function FoodDetailScreen({ route, navigation }) {
           isEditing={isEditing}
           onSave={handleSave}
           onDelete={handleDelete}
+          onConsumed={handleConsumed}
+          onWasted={handleWasted}
         />
       </View>
     </SafeContainer>

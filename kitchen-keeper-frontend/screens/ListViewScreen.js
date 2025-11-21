@@ -43,6 +43,15 @@ const ListViewScreen = ({ navigation, route }) => {
     selectedIds.forEach((id) => handleDeleteFood(id));
     setSelectedIds([]);
   };
+  const handleConsumedSelected = () => {
+    selectedIds.forEach((id) => handleConsumedFood(id));
+    setSelectedIds([]);
+  };
+
+  const handleWastedSelected = () => {
+    selectedIds.forEach((id) => handleWastedFood(id));
+    setSelectedIds([]);
+  };
 
   const [sortBy, setSortBy] = useState("expDate");
   const [filterCategory, setFilterCategory] = useState("All");
@@ -64,7 +73,10 @@ const ListViewScreen = ({ navigation, route }) => {
     setSelectedFood,
     optionModalVisible,
     setOptionModalVisible,
+    handleConsumedFood,
+    handleWastedFood,
   } = useFoodHandlers();
+
   const { filterFoodsByType } = useFoodData();
 
   const { filterType } = route.params || { filterType: "all" };
@@ -177,19 +189,37 @@ const ListViewScreen = ({ navigation, route }) => {
       <SearchBar searchText={searchText} onSearch={setSearchText}></SearchBar>
 
       {isSelectionMode && (
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#D32F2F",
-            padding: 10,
-            margin: 10,
-            borderRadius: 5,
-          }}
-          onPress={handleDeleteSelected}
-        >
-          <Text style={{ color: "white", textAlign: "center" }}>
-            Delete Selected ({selectedIds.length})
-          </Text>
-        </TouchableOpacity>
+        <>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#D32F2F",
+              padding: 10,
+              margin: 10,
+              borderRadius: 5,
+            }}
+            onPress={handleDeleteSelected}
+          >
+            <Text style={style.markAsButtonText}>
+              Delete Selected ({selectedIds.length})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={style.markAsButton}
+            onPress={handleConsumedSelected}
+          >
+            <Text style={style.markAsButtonText}>
+              Mark as Consumed ({selectedIds.length})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={style.markAsButton}
+            onPress={handleWastedSelected}
+          >
+            <Text style={style.markAsButtonText}>
+              Mark as Wasted ({selectedIds.length})
+            </Text>
+          </TouchableOpacity>
+        </>
       )}
       <View style={style.listContainer}>
         <ScrollView>
@@ -343,6 +373,18 @@ const style = StyleSheet.create({
   //   shadowRadius: 2,
   //   elevation: 2,
   // },
+  markAsButton: {
+    backgroundColor: "#000000",
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
+  },
+  markAsButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: RFValue(10),
+    fontFamily: "Lexend-Regular",
+  },
 });
 
 export default ListViewScreen;

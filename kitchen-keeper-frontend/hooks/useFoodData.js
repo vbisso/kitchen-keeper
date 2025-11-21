@@ -107,6 +107,51 @@ export default function useFoodData(sortBy) {
     }
   };
 
+  const markItemConsumed = async (id) => {
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API}/foods/${id}/consume`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        // Refresh the list
+        await loadFoods();
+        console.log("Item marked as consumed:", res);
+      } else {
+        console.error("Error marking item as consumed:", res);
+      }
+    } catch (err) {
+      console.error("Error marking item as consumed:", err);
+    }
+  };
+
+  const markItemWasted = async (id) => {
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API}/foods/${id}/waste`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        // Refresh the list
+        await loadFoods();
+      } else {
+        console.error("Error marking item as consumed:", res.statusText);
+      }
+    } catch (err) {
+      console.error("Error marking item as consumed:", err);
+    }
+  };
+
   const sortFoods = (foods, criterion) => {
     return foods.sort((a, b) => {
       if (criterion === "expDate") {
@@ -192,11 +237,14 @@ export default function useFoodData(sortBy) {
       return true;
     });
   };
+
   return {
     foods,
     saveFoods,
     loadFoods,
     deleteFood,
+    markItemConsumed,
+    markItemWasted,
     sortFoods,
     handleEdit,
     counts,
