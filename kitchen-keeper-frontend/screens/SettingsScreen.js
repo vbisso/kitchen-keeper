@@ -39,9 +39,10 @@ export default function SettingsScreen() {
   }
 
   return (
-    <SafeContainer>
-      <View style={styles.container}>
-        <Text style={styles.title}>Notifications</Text>
+    <SafeContainer style={styles.screen}>
+      <Text style={styles.title}>Notifications</Text>
+
+      <View style={styles.card}>
         <Text style={styles.subtitle}>Notify me before an item expires:</Text>
 
         <Text style={styles.valueText}>
@@ -49,49 +50,76 @@ export default function SettingsScreen() {
         </Text>
 
         <Slider
-          style={{ width: "100%", height: 40, marginTop: 10 }}
+          style={{ width: "100%", height: 40, marginTop: 15 }}
           minimumValue={1}
           maximumValue={14}
           step={1}
           value={daysBefore}
           onValueChange={setDaysBefore}
+          minimumTrackTintColor="#007AFF"
+          thumbTintColor="#007AFF"
         />
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleSave}
-          disabled={saving}
-        >
-          {saving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Save</Text>
-          )}
-        </TouchableOpacity>
       </View>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSave}
+        disabled={saving}
+      >
+        {saving ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Save</Text>
+        )}
+      </TouchableOpacity>
     </SafeContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
+  screen: { padding: 20 },
+
   title: {
-    fontFamily: "Lexend-Bold",
-    fontSize: 24,
-    marginBottom: 10,
+    fontFamily: "Lexend-SemiBold",
+    fontSize: 36,
+    marginBottom: 20,
   },
-  subtitle: { fontSize: 16, color: "#555", marginBottom: 20 },
+
+  card: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+  },
+
+  subtitle: {
+    fontSize: 15,
+    color: "#555",
+    marginBottom: 15,
+    fontFamily: "Lexend-Regular",
+  },
+
   valueText: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 20,
+    fontFamily: "Lexend-SemiBold",
     textAlign: "center",
+    marginBottom: 5,
   },
+
   button: {
-    backgroundColor: "#007bff",
-    padding: 14,
-    borderRadius: 10,
-    marginTop: 30,
+    backgroundColor: "#007AFF",
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 25,
     alignItems: "center",
   },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+
+  buttonText: {
+    color: "#fff",
+    fontFamily: "Lexend-SemiBold",
+    fontSize: 16,
+  },
 });

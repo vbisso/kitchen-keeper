@@ -8,7 +8,6 @@ import {
   Alert,
   StyleSheet,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import SafeContainer from "../components/SafeContainer";
 import { useUser } from "../context/UserContext";
 
@@ -23,24 +22,19 @@ export default function AccountDetailScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Load user data
   useEffect(() => {
     if (user) {
       setFirstName(user.firstName || "");
       setLastName(user.lastName || "");
       setEmail(user.email || "");
-
       setLoading(false);
     }
   }, [user]);
-  //   console.log(data);
 
   const handleSave = async () => {
     try {
       setSaving(true);
-      //   console.log("caca!!", data._id);
-
-      const res = await updateUser({
+      await updateUser({
         id: user._id,
         firstName,
         lastName,
@@ -48,13 +42,10 @@ export default function AccountDetailScreen() {
         ...(password ? { password } : {}),
       });
 
-      console.log(res);
-
       Alert.alert("Success", "Your account has been updated.");
-      setPassword(""); // clear password field
+      setPassword("");
     } catch (err) {
       Alert.alert("Error", "Could not update your account.");
-      console.log("caca??");
     } finally {
       setSaving(false);
     }
@@ -64,10 +55,10 @@ export default function AccountDetailScreen() {
     return <ActivityIndicator style={{ marginTop: 40 }} size="large" />;
 
   return (
-    <SafeContainer>
-      <View style={styles.container}>
-        <Text style={styles.title}>Account Details</Text>
+    <SafeContainer style={styles.screen}>
+      <Text style={styles.title}>Account Details</Text>
 
+      <View style={styles.card}>
         <Text style={styles.label}>Name</Text>
         <TextInput
           style={styles.input}
@@ -97,45 +88,71 @@ export default function AccountDetailScreen() {
           onChangeText={setPassword}
           secureTextEntry
           placeholder="Leave empty to keep current password"
+          placeholderTextColor="#AAA"
         />
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleSave}
-          disabled={saving}
-        >
-          {saving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Save Changes</Text>
-          )}
-        </TouchableOpacity>
       </View>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSave}
+        disabled={saving}
+      >
+        {saving ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Save Changes</Text>
+        )}
+      </TouchableOpacity>
     </SafeContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
+  screen: { padding: 20 },
+
   title: {
-    fontFamily: "Lexend-Bold",
-    fontSize: 24,
-    fontWeight: "600",
+    fontFamily: "Lexend-SemiBold",
+    fontSize: 36,
     marginBottom: 20,
   },
-  label: { fontSize: 14, marginTop: 10, color: "#555" },
-  input: {
-    backgroundColor: "#F3F3F3",
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 5,
+
+  card: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
   },
-  button: {
-    backgroundColor: "#007bff",
-    padding: 14,
+
+  label: {
+    fontSize: 16,
+    fontFamily: "Lexend-Regular",
+    marginTop: 12,
+    color: "#555",
+  },
+
+  input: {
+    backgroundColor: "#F5F5F5",
+    padding: 12,
     borderRadius: 10,
+    marginTop: 6,
+    fontFamily: "Lexend-Regular",
+    fontSize: 16,
+  },
+
+  button: {
+    backgroundColor: "#007AFF",
+    padding: 16,
+    borderRadius: 12,
     marginTop: 25,
     alignItems: "center",
   },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+
+  buttonText: {
+    color: "#fff",
+    fontFamily: "Lexend-SemiBold",
+    fontSize: 16,
+  },
 });
