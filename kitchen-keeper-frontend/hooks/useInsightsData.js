@@ -27,6 +27,7 @@ export default function useInsightsData() {
 
       const insights = await res.json();
       setData(insights);
+      console.log("INSIGHTS RESPONSE:", insights);
     } catch (err) {
       console.error("Error loading insights:", err);
     } finally {

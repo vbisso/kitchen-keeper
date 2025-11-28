@@ -3,6 +3,7 @@ const router = express.Router();
 const FoodEvent = require("../models/foodEvent");
 const FoodItem = require("../models/food");
 const auth = require("../middleware/authMiddleware");
+const mongoose = require("mongoose");
 
 //this uses the auth middleware for all routes
 router.use(auth);
@@ -45,40 +46,93 @@ router.get("/", async (req, res) => {
         : Math.round((onTime / consumedEvents.length) * 100);
 
     // Most consumed
+
     const mostConsumed = await FoodEvent.aggregate([
-      { $match: { userId: userId, type: "CONSUMED" } },
-      { $group: { _id: "$foodItemId", count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: 5 },
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+          type: "CONSUMED",
+        },
+      },
+
       {
         $lookup: {
-          from: "fooditems",
-          localField: "_id",
+          from: "foods",
+          localField: "foodItemId",
           foreignField: "_id",
           as: "item",
         },
       },
-      { $unwind: "$item" },
-      { $project: { name: "$item.name", count: 1 } },
+
+      {
+        $unwind: {
+          path: "$item",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+
+      {
+        $group: {
+          _id: "$item.name",
+          count: { $sum: 1 },
+        },
+      },
+
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+
+      {
+        $project: {
+          name: "$_id",
+          count: 1,
+          _id: 0,
+        },
+      },
     ]);
 
     // Most wasted
     const mostWasted = await FoodEvent.aggregate([
-      { $match: { userId: userId, type: "WASTED" } },
-      { $group: { _id: "$foodItemId", count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: 5 },
+      {
+        $match: { userId: new mongoose.Types.ObjectId(userId), type: "WASTED" },
+      },
+
       {
         $lookup: {
-          from: "fooditems",
-          localField: "_id",
+          from: "foods",
+          localField: "foodItemId",
           foreignField: "_id",
           as: "item",
         },
       },
-      { $unwind: "$item" },
-      { $project: { name: "$item.name", count: 1 } },
+
+      {
+        $unwind: {
+          path: "$item",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+
+      {
+        $group: {
+          _id: "$item.name",
+          count: { $sum: 1 },
+        },
+      },
+
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+
+      {
+        $project: {
+          name: "$_id",
+          count: 1,
+          _id: 0,
+        },
+      },
     ]);
+
+    console.log("MOST CONSUMED:", mostConsumed);
+    console.log("MOST WASTED:", mostWasted);
 
     res.json({
       wasteRate,
