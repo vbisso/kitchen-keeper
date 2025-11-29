@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const FoodEvent = require("../models/foodEvent");
-const FoodItem = require("../models/food");
+// const FoodItem = require("../models/food");
 const auth = require("../middleware/authMiddleware");
 const mongoose = require("mongoose");
 
