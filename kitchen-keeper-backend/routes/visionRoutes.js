@@ -8,9 +8,8 @@ const upload = multer({
   limits: { fileSize: 6 * 1024 * 1024 }, // 6MB max
 });
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 router.post("/recognize-image", upload.single("photo"), async (req, res) => {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No image file uploaded." });

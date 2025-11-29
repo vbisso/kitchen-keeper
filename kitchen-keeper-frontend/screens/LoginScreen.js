@@ -37,7 +37,7 @@ export default function LoginScreen({ navigation }) {
       }
     } catch (err) {
       Alert.alert("Error", "Could not login");
-      console.log(err);
+      console.log("Error", err);
     }
   };
 
