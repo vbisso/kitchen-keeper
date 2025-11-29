@@ -50,7 +50,7 @@ router.get("/", async (req, res) => {
     const mostConsumed = await FoodEvent.aggregate([
       {
         $match: {
-          userId: new mongoose.Types.ObjectId(userId),
+          userId: userId,
           type: "CONSUMED",
         },
       },
